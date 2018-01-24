@@ -1,0 +1,225 @@
+// Erste Versuche mit Zeichensatz
+BasicUpstart2(start)
+
+#import "variables.inc"
+
+.var CHARZIEL = $3000
+.var music = LoadSid("Nightshift.sid")    //<- Here we load the sid file
+.var C_BITMAP_CACHE  = $4000    // bitmap unpack location
+.var C_SCROLL_LINE = 12
+.var counter = $fa
+
+start:
+    jsr $e544 // Bildschirm löschen
+    lda $d018
+    sta FONT
+
+    lda #00
+    sta $d020
+    sta $d021
+
+plotcolour:
+    ldx #40       // init colour map
+    lda #01
+    sta $d800+C_SCROLL_LINE*40, x
+    dex
+    bpl plotcolour+4
+
+    // Charset kopieren nach CHARZIEL 
+    ldx #$00
+    {
+loop:
+    lda charset,x
+    sta CHARZIEL,x
+    lda charset +$100,x
+    sta CHARZIEL+$100,x
+    lda charset +$200,x
+    sta CHARZIEL+$200,x
+    lda charset +$300,x
+    sta CHARZIEL+$300,x
+    lda charset +$400,x
+    sta CHARZIEL+$400,x
+    lda charset +$500,x
+    sta CHARZIEL+$500,x
+    lda charset +$600,x
+    sta CHARZIEL+$600,x
+    lda charset +$700,x
+    sta CHARZIEL+$700,x
+    inx
+    bne loop
+    }
+
+    jsr music.init
+    sei         // set up interrupt
+    lda #$7f
+    sta $dc0d     // turn off the CIA interrupts
+    sta $dd0d
+    and $d011     // clear high bit of raster line
+    sta $d011
+
+    ldy #00       // trigger on first scan line
+    sty $d012
+
+    lda #<irq1    // load interrupt address
+    ldx #>irq1
+    sta $0314
+    stx $0315
+
+    lda #$01      // enable raster interrupts
+    sta $d01a
+    cli
+    rts         // back to BASIC
+
+
+// BEGIN IRQ Verlauf //
+irq1:
+    // Zeichensatz ausschalten
+    lda FONT
+    sta $d018
+
+    lda $d016      // default to no scroll on start of screen
+    and #248      // mask register to maintain higher bits
+    sta $d016
+    ldy #52      // irq zeile
+    sty $d012
+    lda #<irq2    // load interrupt address
+    ldx #>irq2
+    sta $0314
+    stx $0315
+    inc $d019     // acknowledge interrupt
+    jmp $ea31
+
+irq2: // Zeile 50
+    inc $d020
+    jsr music.play
+    dec $d020
+
+    ldy #C_SCROLL_LINE*8+44       // trigger on last scan line
+    sty $d012
+    lda #<irq3    // load interrupt address
+    ldx #>irq3
+    sta $0314
+    stx $0315
+    inc $d019     // acknowledge interrupt
+    jmp $ea31
+
+irq3:
+    // Zeichensatz einschalten
+    lda #28 // Zeichensatz bei $3000 einschalten
+    sta $d018
+    lda $d016     // grab scroll register
+    and #248      // mask lower 3 bits
+    adc offset    // apply scroll
+    sta $d016
+
+    lda #$8E // Startzeile
+    cmp $d012
+    bne *-3
+    ldx #$0b // Delay
+    dex
+    bne *-1
+    lda #$06 // Farbe setzen
+    sta $d020
+    sta $d021
+    lda #$9E // Endzeile
+    cmp $d012
+    bne *-3
+    ldx #$0a // Delay
+    dex
+    bne *-1
+    lda #$00 // Farbe zurücksetzem
+    sta $d020
+    sta $d021
+
+    // Zeichensatz ausschalten
+    lda FONT
+    sta $d018
+
+    lda $d016      // default to no scroll on start of screen
+    and #248      // mask register to maintain higher bits
+    sta $d016
+    lda #$00
+    sta $d020
+    sta $d021
+
+    jsr scroll
+
+    ldy #00
+    sty $d012
+    lda #<irq1    // load interrupt address
+    ldx #>irq1
+    sta $0314
+    stx $0315
+    inc $d019     // acknowledge interrupt
+    jmp $ea31
+
+// Scroll Routine
+scroll:
+    dec smooth      // smooth scroll
+    bne continue
+
+    dec offset      // update scroll
+    bpl resetsmooth
+
+//Hard Scroll
+    lda #07       // reset scroll offset
+    sta offset
+
+shiftrow:  // Alle 39 Zeichen eins nach links setzen
+    ldx #00
+    lda $0400+C_SCROLL_LINE*40+1, x
+    sta $0400+C_SCROLL_LINE*40, x
+    inx
+    cpx #39
+    bne shiftrow+2
+
+    ldx nextchar    // welches Zeichen kommt als nächstes
+    lda message, x  // lesen
+    sta $0400+C_SCROLL_LINE*40+39 // und an das Ende der Zeile schreiben
+    inx
+    lda message, x
+    cmp #$ff      // Ende des Textes erreicht?
+    bne resetsmooth-3
+    ldx #00
+    stx nextchar
+
+resetsmooth:
+    ldx #01       // set smoothing
+    stx smooth
+
+    ldx offset      // update colour map
+    lda colours, x
+    sta $d800+C_SCROLL_LINE*40
+    lda colours+8, x
+    sta $d800+C_SCROLL_LINE*40+1
+    lda colours+16, x
+    sta $d800+C_SCROLL_LINE*40+38
+    lda colours+24, x
+    sta $d800+C_SCROLL_LINE*40+39
+continue: 
+    rts
+
+// HardScroll Routine
+offset:   .byte 07      // start at 7 for left scroll
+smooth:   .byte 01
+nextchar: .byte 00
+
+FONT:     .byte 00
+
+colours:
+    .byte 06, 06, 06, 06, 04, 04, 04, 04
+    .byte 14, 14, 14, 14, 03, 03, 03, 03
+    .byte 03, 03, 03, 03, 14, 14, 14, 14
+    .byte 04, 04, 04, 04, 06, 06, 06, 06
+
+index:       .byte 00 // starting colour index
+
+message:	.text "dies sollte ein beispiel text sein. hier koennte auch ein laengerer text erfolgen   "
+          .byte $ff
+
+charset: .import c64 "../Resources/Fonts/aeg_collection_03.64c"
+
+
+      *=music.location "Music"
+music_data:      .fill music.size, music.getData(i)
+
