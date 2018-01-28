@@ -8,7 +8,7 @@ BasicUpstart2(start)
 
 .var Zeilenstart = $6A // 106
 .var Zeilenende  = $C1 // 193
-.var music = LoadSid("..\Nightshift.sid")    //<- Here we load the sid file
+.var music = LoadSid("Nightshift.sid")    //<- Here we load the sid file
 
 start:
         sei         // set up interrupt
@@ -46,11 +46,14 @@ loaddccimage:
 
         lda #$01      // enable raster interrupts
         sta $d01a
-		lda #$00
+        lda #$00
 		jsr music.init
         cli
         rts         // back to BASIC
 
+// =====================================================
+//= Start Intro
+// =====================================================
 
 // BEGIN IRQ Verlauf //
 irq1:
@@ -71,8 +74,8 @@ irq1:
 
 irq2: // Zeile 52
         :irqEnd #Zeilenstart-8:#irq3
-        :SetBorderColor(11)
-        :SetBackgroundColor(11)
+        :SetBorderColor(12)
+        :SetBackgroundColor(12)
 
         lda #$3b
         sta $d011
@@ -91,8 +94,8 @@ irq3:
         ldx #$0a // Delay
         dex
         bne *-1
-		:SetBackgroundColor(15)
-		:SetBorderColor(15)
+		:SetBackgroundColor(11)
+		:SetBorderColor(11)
 		ldx #$03
 		dex
 		bne *-1
@@ -117,8 +120,8 @@ irq3:
         nop
         nop
         nop
-        :SetBorderColor(11)
-        :SetBackgroundColor(11)
+        :SetBorderColor(12)
+        :SetBackgroundColor(12)
         // Zeichensatz ausschalten
         lda #$14
         sta $d018
@@ -131,4 +134,4 @@ irq3:
 music_data:      .fill music.size, music.getData(i)
 
       *=$2000 "Grafik"
-#import "../eddie_logo.txt"
+#import "eddie_logo.txt"
