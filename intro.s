@@ -1,17 +1,17 @@
 ; Open Top/Bottom Borders
-; 
+;
 ; Platform: C64
 ; Code: Jesder / 0xc64
 ; Site: http://www.0xc64.com
 ; Compiler: win2c64 (http://www.aartbik.com)
-;
+; Tested with ACME Assembler
 
                         ; common register definitions
 
 REG_INTSERVICE_LOW      .equ $0314              ; interrupt service routine low byte
 REG_INTSERVICE_HIGH     .equ $0315              ; interrupt service routine high byte
 REG_SCREENCTL_1         .equ $d011              ; screen control register #1
-REG_RASTERLINE          .equ $d012              ; raster line position 
+REG_RASTERLINE          .equ $d012              ; raster line position
 REG_INTFLAG             .equ $d019              ; interrupt flag register
 REG_INTCONTROL          .equ $d01a              ; interrupt control register
 REG_INTSTATUS_1         .equ $dc0d              ; interrupt control and status register #1
