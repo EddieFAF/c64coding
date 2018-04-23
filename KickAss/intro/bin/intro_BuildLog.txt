@@ -1,0 +1,19 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+  File creation disabled (no breakpoint file created)
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$0bc7 Basic End
+  $0bc8-$0fc7 Charset1x1
+  $1000-$0fff Music
+  $2000-$4329 gfx
+
+Writing prg file: D:\C64\Source\c64coding\KickAss\intro\bin\intro_Compiled.prg
+Writing Vice symbol file: D:\C64\Source\c64coding\KickAss\intro\bin\intro.vs
+Writing Symbol file: bin\intro.sym
