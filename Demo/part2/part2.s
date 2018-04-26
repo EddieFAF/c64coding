@@ -40,7 +40,7 @@ sync_intro:
       jsr charset_init
       jsr screen_init
       lda #$00
-      jsr music.init
+      jsr music.init // Initialize Music Playback
 
 .if (RELEASE==false) {
       sei
