@@ -1,0 +1,16 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$0950 Basic End
+  $0a00-$0a00 Unnamed
+
+Writing prg file: H:\Daten\C64\Sources\c64coding-master\Demo\loader\loader.prg
+Writing Vice symbol file: H:\Daten\C64\Sources\c64coding-master\Demo\loader\loader.vs
+Writing Symbol file: loader.sym
