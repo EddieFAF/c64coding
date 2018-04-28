@@ -25,4 +25,8 @@ demo.d64: $(OBJECTS)
 clean:
 	rm -f *.exo
 	rm -f *.prg
+	rm -f *.vs
+	rm -f *.sym
+	rm -f *.log
 	rm demo.d64
+	

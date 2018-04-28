@@ -4,7 +4,7 @@
 //**  Filename: Part2.asm                                              **
 //**  ---------------------------------------------------------------  **
 //**  Author (c): [FAF]Eddie                                           **
-//**  File Date: 2018-04-11                                            **
+//**  File Date: 2018-04-28                                            **
 //***********************************************************************
 #import "../stdlib/stdlib_k.a"
 #import "../stdlib/functions.inc"
@@ -398,17 +398,16 @@ scroller_render_offset: ldy REG_ZERO_FD
             lsr
             lsr
             sta scroller_character_mask + 1
-
-update_scroller_done:   rts
+            rts
 
 
 // ************************************************************************** //
 scroll_delay:     .byte $00
 scroll_delay_4x4: .byte $00
-scroll1x1_text:   .text "dies ist ein scrolltext, der sehr lang ist und"
+scroll1x1_text:   .text "dies ist ein 1x1 scrolltext, der sehr lang ist und"
                   .text " daher auch ueber viele zeilen gehen kann.... "
                   .byte $00
-scroll4x4_text:   .text "dies ist ein scrolltext, der sehr lang ist und"
+scroll4x4_text:   .text "dies ist ein 4x4 scrolltext, der sehr lang ist und"
                   .text " daher auch ueber viele zeilen gehen kann.... "
                   .byte $FF
 
