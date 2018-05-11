@@ -1,0 +1,17 @@
+parsing
+flex pass 1
+flex pass 2
+Output pass
+
+Memory Map
+----------
+Default-segment:
+  $0a00-$09ff Unnamed
+  $0a00-$0dc7 Main
+  $1000-$1d77 Music
+  $2000-$2871 gfx
+  $2872-$2c71 Charset1x1
+
+Writing prg file: H:\Daten\C64\Sources\c64coding-master\Demo\part3\part3.prg
+Writing Vice symbol file: H:\Daten\C64\Sources\c64coding-master\Demo\part3\part3.vs
+Writing Symbol file: part3.sym
