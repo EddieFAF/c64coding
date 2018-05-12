@@ -12,6 +12,8 @@
 .var REG_ZERO_O_DEV_NUM      = $9a
 .var REG_ZERO_DEVICE_NO      = $ba
 
+.var load_address = $5FFE
+
 
                         // common registers
 .var REG_INTSERVICE_LOW      = $0314              // interrupt service routine low byte
@@ -35,48 +37,21 @@
 .var K_CLOSE_CHANNEL         = $ffcc
 .var K_LOAD_FILE             = $ffd5
 
-
+.var RELEASE = 1
                         // constants
 .var C_PLACEHOLDER           = $ffff
 
-                        BasicUpstart2(start)
+//                        BasicUpstart2(start)
+*=$C000
 
                         // program start
                         //*= $080D "Main"                 // begin (2049)
 
 start:
                         jmp load_next_part
-
-
-                        // unpack routine ---------------------------------------------]
-                        // ------------------------------------------------------------]
-unpack_next:            ldx #$01                        // unpack rle resources
-                        jsr unpack_getbyte 
-                        cmp #$c2                        // rle control code 
-                        bne unpack_literal
-
-                        jsr unpack_getbyte
-                        cmp #$00                        // rle control + 0 = eof 
-                        beq unpack_return
-
-                        tax 
-                        jsr unpack_getbyte
-
-unpack_literal:         sta C_PLACEHOLDER
-                        inc unpack_literal + 1 
-                        bne unpack_return2 
-                        inc unpack_literal + 2 
-
-unpack_return2:         dex
-                        bne unpack_literal 
-                        beq unpack_next
-
-unpack_getbyte:         lda C_PLACEHOLDER
-                        inc unpack_getbyte + 1 
-                        bne unpack_return 
-                        inc unpack_getbyte + 2 
-
-unpack_return:          rts 
+exod_addr:               // include exodecrunch code and wrapper
+  #import "wrap.asm"
+  #import "exodecrunch.asm"
 
 
                         // apply interrupt routine -------------------------------------------]
@@ -197,6 +172,11 @@ set_filename_high:      ldy loader_part_name_high
                         ldy #>load_address
                         jsr K_LOAD_FILE
 
+                        stx opbase+1
+                        sty opbase+2
+entpacken:
+                        jsr exod_addr                   // entpacken
+
                         lda #000                        // close file system
                         jsr K_CLOSE_FILE
                         jsr K_CLOSE_CHANNEL
@@ -243,8 +223,8 @@ sync_part:              sei
                         ldy #000
                         sty REG_RASTERLINE
 
-                        lda #<load_address              // load interrupt address
-                        ldx #>load_address
+                        lda #$00                       // load interrupt address
+                        ldx #$0a
                         sta REG_INTSERVICE_LOW
                         stx REG_INTSERVICE_HIGH
 
@@ -259,7 +239,4 @@ sync_part:              sei
                         // -------------------------------------------------------------------]
 
 // include "fastload.s"
-
-*=$0A00
-load_address:           nop
 

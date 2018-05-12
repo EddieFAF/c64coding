@@ -1,13 +1,15 @@
 parsing
 flex pass 1
 flex pass 2
+flex pass 3
 Output pass
 
 Memory Map
 ----------
 Default-segment:
-  $0a00-$09ff Unnamed
-  $0a00-$0dc7 Main
+  $0801-$080c Basic
+  $080e-$0819 Basic End
+  $081a-$0bc7 Main
   $1000-$1d77 Music
   $2000-$2871 gfx
   $2872-$2c71 Charset1x1

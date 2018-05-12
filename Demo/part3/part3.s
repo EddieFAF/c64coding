@@ -7,7 +7,7 @@
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 .var VICCHARSETBLOCKNO      = 6 // 4=$2000 5=$2800, 6=$3000, 7=$3800
 
-.var RELEASE                = true
+.var RELEASE                = false
 
 .var C_UNPACK_ROUTINE        = loader.unpack_next // $0810
 .var C_UNPACK_DEST           = loader.unpack_literal // $0824
