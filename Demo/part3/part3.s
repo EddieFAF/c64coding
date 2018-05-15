@@ -1,38 +1,43 @@
-// Assembler: Kick Assembler
+//*********************************************************************72
+//**  Project Name: Demo Project                                       **
+//**  ---------------------------------------------------------------  **
+//**  Filename: Part3.asm                                              **
+//**  ---------------------------------------------------------------  **
+//**  Author (c): [FAF]Eddie                                           **
+//**  File Date: 2018-04-11                                            **
+//***********************************************************************
+// Assembler: KickAss
 
 #import "../stdlib/stdlib_k.a"
+#import "../stdlib/macros.inc"
 #import "../stdlib/functions.inc"
 .import source "../loader/loader.sym"
 
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 .var VICCHARSETBLOCKNO      = 6 // 4=$2000 5=$2800, 6=$3000, 7=$3800
-
-.var RELEASE                = false
-
-.var C_UNPACK_ROUTINE        = loader.unpack_next // $0810
-.var C_UNPACK_DEST           = loader.unpack_literal // $0824
-.var C_UNPACK_SOURCE         = loader.unpack_getbyte // $0834
 .var C_APPLY_INTERRUPT       = loader.apply_interrupt // $0840
 .var C_EXIT_PART             = loader.exit_intro_part // $084C
+
+.var RELEASE                = 1
 
 .var MC_color2              = $0c
 .var MC_color1              = $0d
 .var BG_color               = $0b
 
-.var music = LoadSid("Nightshift.sid")    //<- Here we load the sid file
-        //:equalCharPack("loading320x200.png", $3800, $2800)
 
-.if (RELEASE==false) { BasicUpstart2(sync_intro) } else { *=$0A00 }
+.if (RELEASE==1) { .eval C_EXIT_PART = $c1ab } else { .eval C_EXIT_PART = $fce2 }
+.if (RELEASE==1) { .eval C_APPLY_INTERRUPT = $c19f } else { .eval C_APPLY_INTERRUPT = APPLY_INTERRUPT }
+
+.if (RELEASE==0) { BasicUpstart2(sync_intro) } else { *=$0A00 }
 
 APPLY_INTERRUPT:
-.if (RELEASE==false) {
-      sta $D012
-      stx $0314
-      sty $0315
-      jmp $ea81
+.if (RELEASE==0) {
+        sta $D012
+        stx $0314
+        sty $0315
+        jmp $ea81
 }
 
-*=* "Main"
 sync_intro:
         lda #$00
         sta $0286
@@ -40,29 +45,29 @@ sync_intro:
         jsr screen_init
         jsr char_init
         lda #$00
-        sta $d020
-        sta $d021
-.if (RELEASE==false) {
-      sei
-      lda #$7f
-      sta $dc0d     // turn off the CIA interrupts
-      sta $dd0d
-      and $d011     // clear high bit of raster line
-      sta $d011
-      :irqEnd #$30:#irq1
+        sta VIC2BorderColour
+        sta VIC2ScreenColour
+.if (RELEASE==0) {
+        sei
+        lda #$7f
+        sta $dc0d     // turn off the CIA interrupts
+        sta $dd0d
+        and $d011     // clear high bit of raster line
+        sta $d011
+        :irqEnd #$30:#irq1
 
-      lda #$01      // enable raster interrupts
-      sta $d01a
-      cli
-      jmp *
+        lda #$01      // enable raster interrupts
+        sta $d01a
+        cli
+        jmp *
 }
 
         lda #$00
-        jsr music.init
+        jsr $1000
         lda #$30
         ldx #<irq1
         ldy #>irq1
-        .if (RELEASE==true){ jmp C_APPLY_INTERRUPT } else { jmp APPLY_INTERRUPT }
+        jmp C_APPLY_INTERRUPT
 
 // =====================================================
 // = Start Intro
@@ -73,8 +78,8 @@ irq1:
         dex
         bne *-1
         lda #$0C
-        sta $d020
-        sta $d021
+        sta VIC2BorderColour
+        sta VIC2ScreenColour
         lda #$3b
         sta $d011
 subroutine:
@@ -83,40 +88,41 @@ subroutine:
         lda #$91
         ldx #<irq2
         ldy #>irq2
-        .if (RELEASE==true){ jmp C_APPLY_INTERRUPT } else { jmp APPLY_INTERRUPT }
+        jmp C_APPLY_INTERRUPT
 
 irq2:
         ldx #$04
         dex
         bne *-1
         lda #$00
-        sta $d020
-        sta $d021
+        sta VIC2BorderColour
+        sta VIC2ScreenColour
         lda #$1b
         sta $d011
         inc $d019
         lda #$A2
         ldx #<irq3
         ldy #>irq3
-        .if (RELEASE==true){ jmp C_APPLY_INTERRUPT } else { jmp APPLY_INTERRUPT }
+        jmp C_APPLY_INTERRUPT
 
 irq3:
         ldx #$04
         dex
         bne *-1
         lda #$0C
-        sta $d020
-        sta $d021
+        sta VIC2BorderColour
+        sta VIC2ScreenColour
         lda #$10+6*2
         sta $d018
         inc $d019
-        inc $d020
-        jsr music.play
-        dec $d020
+
+        inc VIC2BorderColour
+        jsr $1003
+        dec VIC2BorderColour
         lda #$30
         ldx #<irq1
         ldy #>irq1
-        .if (RELEASE==true){ jmp C_APPLY_INTERRUPT } else { jmp APPLY_INTERRUPT }
+        jmp C_APPLY_INTERRUPT
 
 // ************************************************************************** //
 // ** Subroutinen
@@ -254,7 +260,7 @@ screen_init:
         sta $0400,x
         lda colora+2+$e0,x
         sta $04e0,x
-        inx    
+        inx
         bne !-
 
         ldx #$00
@@ -329,7 +335,7 @@ tabmaster:
         .byte $01, $01, $01, $01, $01, $01, $01, $01
         .byte $01, $01, $01, $01, $01, $01, $01, $01
 
-        .align $100
+        .align 256
 text:
         .text "          welcome to xs dnite!          "
         .text "     a new production done by eddie     "
@@ -340,12 +346,11 @@ text:
 
 
 
-        *=music.location "Music"
-music_data:
- .fill music.size, music.getData(i)
+        *=$1000
+.import binary "Nightshift.sid",$7e
 
-        *=$2000 "gfx"
-        #import "gfx.inc"
-*=* "Charset1x1"
+        *=$2000
+        #import "gfx_k.inc"
+
 char_data: // Lade direkt und verschiebe später
         .import c64 "devils_collection_26_y.64c"
