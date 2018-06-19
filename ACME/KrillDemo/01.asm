@@ -9,8 +9,8 @@
 .RELEASE = 0
 .SOUNDDISPLAY = 0
 
-!src "stdlib/stdlib.a"
-!src "stdlib/macros.asm"
+!src "../../stdlib/stdlib.a"
+!src "../../stdlib/macros.asm"
 !src "loader.inc"
 
 ; ScreenRAM $4400-$47e8

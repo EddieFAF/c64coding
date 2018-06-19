@@ -83,10 +83,10 @@
   lda #.clearByte
   ldx #0
 -
-  sta screen, x
-  sta screen + $100, x
-  sta screen + $200, x
-  sta screen + $300, x
+  sta .screen, x
+  sta .screen + $100, x
+  sta .screen + $200, x
+  sta .screen + $300, x
   inx
   bne -
 }

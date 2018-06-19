@@ -99,7 +99,7 @@ ZPAddressToSave                 = $ac       ; $ac - ad
 ZPAddressToLoad                 = $ae       ; $ae - af
 
 ; $b0 - $b1 Tape timing constants
-ZPTapeTimingConstant
+;ZPTapeTimingConstant
 
 ZPDatasetteBufferLo             = $b2
 ZPDatasetteBufferHo             = $b3
