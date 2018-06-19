@@ -7,7 +7,7 @@ BasicUpstart2(start)
 
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 .var VICCHARSETBLOCKNO      = 6 // 4=$2000 5=$2800, 6=$3000, 7=$3800
-.var RELEASE                = false
+.var RELEASE                = true
 .var MC_color2              = $0c
 .var MC_color1              = $0d
 .var BG_color               = $0b
@@ -223,7 +223,7 @@ screen_init:
         sta $0400,x
         lda colora+2+$e0,x
         sta $04e0,x
-        inx
+        inx    
         bne !-
 
         ldx #$00
