@@ -1,0 +1,212 @@
+;some macros to use for easy raster handling, by rambones
+ 
+!zone mainprogram
+*=$1000
+
+!src "macros.a"
+ 
+;-------------- MACROS ----------------
+;;!macro INIT .inadd, .pladd{
+; (code here)
+;}
+ 
+ 
+;-------------------------------------------------------------------------------
+; start of program..
+ 
+    jmp START
+ 
+; utilities and pointers..
+ 
+_quitirq
+    pla
+    tax
+    pla
+    tay
+    pla
+_freeze
+    rti
+ 
+_spritepoint
+!BYTE 200,201,202,203,204,205,206,207
+ 
+_xsprite
+!BYTE 100,120,140,160,180,200,220,240
+ 
+_ysprite
+!BYTE 100,100,100,100,100,100,100,100
+ 
+ 
+SCREEN=$0400
+ZP=$2B
+ 
+;---------- MAIN START -----------
+ 
+START
+ 
+    ;jsr _clearscreen
+    ;jsr _setuplogo
+    ;jsr _setlogocolor
+    ;jsr SSINIT           ;charscroll
+    ;jsr _clearline
+ 
+ 
+    sei
+    lda #$35
+    sta $01
+    ldx #>INT1
+    ldy #<INT1
+    stx $FFFF
+    sty $FFFE
+    ldx #>_freeze
+    ldy #<_freeze
+    stx $FFFA
+    sty $FFFB
+    ldx #0
+    stx $DC0E
+    inx
+    stx $D01A
+    lda #$1B
+    sta $D011
+    lda #LINE1
+    sta $D012
+    cli
+LOCK
+    jmp LOCK
+ 
+;--------------------------------------
+LINE1=$32
+INT1
+    +ENTER
+ 
+    ldx #7
+.time5 dex
+    bne .time5
+ 
+    +SetBorderColor 1
+    +SetBackgroundColor 0
+ 
+    ;jsr SSSET2          ;stop charscroll
+;set logofont $2800
+    lda $D018
+    and #240
+    ora #10
+    sta $D018
+ 
+;set multicolors on charlogo
+    +SetMultiColor1 2
+    +SetMultiColor2 4
+ 
+;set multi color text mode
+    lda $d016
+    ora #16
+    sta $d016
+ 
+;enable extended text background color
+;lda $d011
+;ora #64
+;sta $d011
+ 
+    +EXIT INT2,LINE2
+ 
+ 
+;--------------------------------------
+;set sprites here
+ 
+LINE2=$4a
+INT2
+    +ENTER
+ 
+    ldx #7
+.time1 dex
+    bne .time1
+ 
+    ;jsr SSSET2          ;stop charscroll
+ 
+    +SetBorderColor 5
+    +SetBackgroundColor 5
+ 
+    lda #255
+    sta $d015
+ 
+    lda #1
+    sta $d027
+    sta $d028
+    sta $d029
+    sta $d02a
+    sta $d02b
+    sta $d02c
+    sta $d02d
+    sta $d02e
+ 
+;ok
+    ldx #0
+.spri2 lda _spritepoint,x
+    sta $07f8,x
+    inx
+    cpx #7
+    bne .spri2
+ 
+    lda #100
+    sta $d000
+    lda #100
+    sta $d001
+ 
+; ldx #0
+;.spri4 lda _ysprite,x
+; sta $d001,x
+; inx
+; inx
+; cpx #7
+; bne .spri4
+ 
+    +EXIT INT3,LINE3
+ 
+;--------------------------------------
+LINE3=$c8
+INT3
+    +ENTER
+ 
+    ldx #7
+.time2 dex
+    bne .time2
+ 
+    +SetBorderColor 1
+    +SetBackgroundColor 0
+ 
+    ;jsr SSSET2          ;stop charscroll
+    ;jsr SSCALC          ;calc charscroll
+ 
+    +EXIT INT4,LINE4
+;--------------------------------------
+ 
+LINE4=$f1
+INT4
+    +ENTER
+ 
+    ldx #7
+.time7 dex
+    bne .time7
+ 
+    +SetBorderColor 2
+    +SetBackgroundColor 6
+ 
+    lda #22
+    sta $d018
+ 
+;set single color text mode
+    lda $d016
+    and #239
+    sta $d016
+ 
+    ;jsr SSSET1             ;scroll char
+ 
+    +EXIT INT1,LINE1
+ 
+;--------------------------------------
+_clearscreen
+ 
+;here go all the subroutines...
+ 
+ 
+!endoffile
