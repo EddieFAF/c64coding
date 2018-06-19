@@ -8,7 +8,7 @@
 ;***********************************************************************
 !cpu 6510
 !sl "fullpart.lbl"
-!initmem $ea        ; Speicher vorfüllen
+!initmem $ea        ; Speicher vorfÃ¼llen
 !src "../../stdlib/macros.asm" ; Stellt ein paar Macros bereit
 !src "../../stdlib/stdlib.a"
 
@@ -23,13 +23,13 @@ year = 1971
             jmp .start
             *=$0900
             !bin "../../ACME/install-c64.prg",,2
-            
+
             *=$9000
             !bin "../../ACME/loader-c64.prg",,2
-            
-            * = $c000   ; Nach $c000 verlegen, da stört es die Parts nicht
 
-.dela        !byte 00 
+            * = $c000   ; Nach $c000 verlegen, da stÃ¶rt es die Parts nicht
+
+.dela        !byte 00
 .tabcount    !byte 00
 
 
@@ -214,11 +214,11 @@ year = 1971
 ; ********************************
 ; ** Spritedaten initialisieren **
 ; ********************************
-		    ldx #0
--   	    lda .sprite_text_data,X
+            ldx #0
+-           lda .sprite_text_data,X
             sta $0340,X
- 		    inx 
- 		    cpx #63
+            inx
+            cpx #63
             bne -
             rts
 
@@ -295,7 +295,7 @@ year = 1971
             ldx .charpos
             cpx #$00
             bne +
-            jmp .set_fadeout 
+            jmp .set_fadeout
 +           lda #$20
             sta $0568,x
             sta $0590,x
@@ -320,7 +320,7 @@ year = 1971
 
 .sprite_set_back:
 ; **********************
-; ** Setze Zeichen löschen
+; ** Setze Zeichen lï¿½schen
 ; **********************
             lda #<.sprite_back
             sta .sprite_change_2+1
@@ -403,7 +403,7 @@ year = 1971
 ; ---------------------------------------------------------------------------
 
 ; **********************
-; ** Setze Zeichen löschen
+; ** Setze Zeichen lï¿½schen
 ; **********************
 .set_fadeout:
             lda #<.fade_out
@@ -455,9 +455,9 @@ year = 1971
 ; **********************
 .start:
 
-RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
- 
-            jsr $e544                           ;Bildschirm löschen
+RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslï¿½sen
+
+            jsr $e544                           ;Bildschirm lï¿½schen
             +SetBorderColor 14
             +SetBackgroundColor 6
 
@@ -472,22 +472,22 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             lda #%00000001                      ;Raster-IRQs vom VIC-II aktivieren
             sta VIC2InteruptControl
             lda #RASTER                         ;Hier soll unsere Linie erscheinen
-            sta VIC2Raster                      
-            lda VIC2ScreenControlV              ;Zur Sicherheit höchste BIT
-            and #%01111111                      ;für die Rasterzeile löschen
+            sta VIC2Raster
+            lda VIC2ScreenControlV              ;Zur Sicherheit hï¿½chste BIT
+            and #%01111111                      ;fï¿½r die Rasterzeile lï¿½schen
             sta VIC2ScreenControlV
             lda #%01111111                      ;Timer-IRQs abschalten
             sta CIA1InterruptControl
             lda CIA1InterruptControl
-            lda #%0000001                       ;evtl. aktiven Raster-IRQ bestätigen
+            lda #%0000001                       ;evtl. aktiven Raster-IRQ bestï¿½tigen
             sta VIC2InteruptStatus
-            cli 
+            cli
 
             jmp *
- 
-;*** an Pagegrenze ausrichten, damit die Sprünge passen
+
+;*** an Pagegrenze ausrichten, damit die Sprï¿½nge passen
 !align 255,0
- 
+
 .myIRQ:      lda #<.doubleIRQ
             sta IRQServiceRoutineLo
             lda #>.doubleIRQ
@@ -528,12 +528,12 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             beq .myIRQMain
 
 .myIRQMain:  ldx #$ff
-.nextColor:  inx                                 ;Schleifenzähler erhöhen
+.nextColor:  inx                                 ;Schleifenzï¿½hler erhï¿½hen
             ldy .delaytable,X                    ;Wartezeit holen
             dey                                 ;verringern
-            bne *-1                             ;solange größer 0 zurück zum DEY
+            bne *-1                             ;solange grï¿½ï¿½er 0 zurï¿½ck zum DEY
             lda .rowcolortable,X                 ;Farbe holen
-            sta VIC2ScreenColour                ;und ins Register für die Hintergrundfarbe
+            sta VIC2ScreenColour                ;und ins Register fï¿½r die Hintergrundfarbe
             cpx #$42
             bne .nextColor                       ;solange die Farbe positiv ist -> @loop
             +SetBackgroundColor 6
@@ -545,7 +545,7 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             lda #RASTER
             sta VIC2Raster
 
-            lda #%00000001                      ;IRQ bestätigen
+            lda #%00000001                      ;IRQ bestï¿½tigen
             sta VIC2InteruptStatus
 .irq_jump_target:
             jsr .sprite_line_move
@@ -760,4 +760,3 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte $f6
-
