@@ -1,0 +1,290 @@
+;***********************************************************************
+;**  Project Name: Loader                                             **
+;**  ---------------------------------------------------------------  **
+;**  Filename: loader.a                                               **
+;**  ---------------------------------------------------------------  **
+;**  Author (c): Eddie                                                **
+;**  File Date: 2018-02-28                                            **
+;***********************************************************************
+;Meine persönliche Reihenfolge ist anders.
+; -Macros,
+; -Includes von Daten mit fester Adresse (Musik, Grafik...)
+;-Basic-Zeile und ein erstes bisschen Code wie Kopierschleifen o.Ä. dazu.
+;-Dann für größere Funktionsblöcke, z.B. Diskroutinen, Zeichenroutinen, Raster-IRQs...:
+; [ -Variablen
+; -Unterprogramme: Deren lokale Variablen, dann der Code dazu
+; -Der eigentliche Code]
+; Und zu guter Letzt die Hauptroutine, die all die anderen Sachen verwendet.
+
+
+!src "../macros.a" ; Stellt ein paar Macros bereit
+!src "../variables.a" ; Sprungziele
+
+;my Routine, that starts with a nice BASIC line
+!macro der_text {
+  !pet "faf world domination"
+}
+year = 1971
+!src "../basicstart_template.a"
+
+        jmp start
+
+!src "../subroutines.a"
+
+
+screen_init:
+; ********************************
+; ** Setzen der Farben
+; ********************************
+        ldx #$00
+-       lda char_colors,x
+        sta $D968,x
+        lda char_colors+$18,x
+        sta $D980,x
+        inx
+        bne -
+        rts
+        
+sprite_init:        
+; ********************************
+; ** Spritedaten initialisieren ** 
+; ********************************
+		ldx #0 
+-   	lda sprite1,X 
+ 		sta $0340,X 
+ 		inx 
+ 		cpx #63 
+        bne -
+        rts
+        
+sprite_set:
+; ********************************
+; ** Sprites einrichten         **
+; ********************************
+        lda #$03                ; Sprite 0+1 aktivieren
+        sta SPRITEACTIV
+        lda #$01                ; Schwarz
+        sta SPRITE0COLOR        ; Farbe Sprite 0
+        sta SPRITE1COLOR        ; Farbe Sprite 1
+        lda #$0D
+        sta $07f8               ; Sprite 0
+        sta $07f9               ; Sprite 1
+        ldx #$10                ; x
+        ldy #116                ; y
+        stx SPRITE0X
+        sty SPRITE0Y
+        ldx #$10
+        ldy #138
+        stx SPRITE1X
+        sty SPRITE1Y
+        lda #$03                ; Sprite 0+1 Ylarge
+        sta SPRITEDOUBLEHEIGHT
+        rts
+        
+sprite_move:
+; **********************
+; ** Text einblenden
+; **********************
+        dec spr_counter
+        dec spr_counter
+        bne sprite_move_loop
+        ldx charpos
+        cpx #$28
+        bne +
+        jmp sprite_set_space
++       lda char_screen,x
+        sta $0568,x
+        lda char_screen+40,x
+        sta $0590,x
+        lda char_screen+80,x
+        sta $05B8,x
+        lda char_screen+120,x
+        sta $05E0,x
+        lda char_screen+160,x
+        sta $0608,x
+        lda char_screen+200,x
+        sta $0630,x
+        lda char_screen+240,x
+        sta $0658,x
+
+        lda #$08
+        sta spr_counter
+        inc charpos
+sprite_move_loop:
+        inc SPRITE0X
+        inc SPRITE0X
+        inc SPRITE1X
+        inc SPRITE1X
+        bne +
+        lda #$03
+        sta $d010
++       rts        
+
+sprite_back:
+; **********************
+; ** Text ausblenden
+; **********************
+        dec spr_counter
+        dec spr_counter
+        bne sprite_back_loop
+        ldx charpos
+        cpx #$00
+        bne +
+        jmp sprite_set_rts 
++       lda #$20
+        sta $0568,x
+        sta $0590,x
+        sta $05B8,x
+        sta $05E0,x
+        sta $0608,x
+        sta $0630,x
+        sta $0658,x
+
+        lda #$08
+        sta spr_counter
+        dec charpos
+sprite_back_loop
+        dec SPRITE0X
+        dec SPRITE0X
+        dec SPRITE1X
+        dec SPRITE1X
+        bne +
+        lda #$00
+        sta $d010
++       rts        
+
+sprite_set_space:
+; **********************
+; ** setze 'Warten auf Space'
+; **********************
+        lda #<sprite_space
+        sta sprite_change+1
+        lda #>sprite_space
+        sta sprite_change+2
+        lda #$00
+        sta SPRITEACTIV
+        rts
+
+sprite_space:
+; **********************
+; ** Warten auf Space
+; **********************
+        lda #$7f       ; detect space bar
+        sta $dc00
+        lda $dc01
+        and #$10
+        bne +
+        jmp sprite_set_back        
++       rts
+
+sprite_set_back:
+; **********************
+; ** Setze Zeichen löschen
+; **********************
+        lda #<sprite_back
+        sta sprite_change+1
+        lda #>sprite_back
+        sta sprite_change+2
+        
+        lda #$03
+        sta SPRITEACTIV
+        lda #$28
+        sta charpos                              
+        lda #$08
+        sta spr_counter
+        rts 
+
+sprite_set_rts:        
+; **********************
+; ** setze RTS
+; **********************
+        lda #<sprite_set_rts_exit
+        sta sprite_change+1
+        lda #>sprite_set_rts_exit
+        sta sprite_change+2
+sprite_set_rts_exit
+        rts
+
+; **********************
+spr_counter !byte 08
+charpos     !byte 00
+
+!src "loading2.a"
+
+start
+; **********************************************************
+; ** H A U P T R O U T I N E                              **
+; **********************************************************
+        +SetBackgroundColor 0
+        +SetBorderColor 14
+        
+        jsr $e544
+        lda #$15        ; Kleinbuchstaben
+        sta $d018
+        
+        jsr screen_init ; Bildschirm vorbereiten
+        jsr sprite_init ; Sprites vorbereiten
+        jsr sprite_set  ; Sprites einschalten        
+        
+        ; register first interrupt
+        sei
+        lda #$7f
+        sta $dc0d     ; turn off the CIA interrupts
+        sta $dc0d
+        and $d011     ; clear high bit of raster line
+        sta $d011
+        +irqEnd $72, irq1
+        lda #$01                ; enable raster interrupts
+        sta $d01a
+        cli
+forever jmp forever
+        
+; ************************************************
+; ** IRQ Routinen                               **
+; ************************************************
+irq1:
+        lda #$02
+        jsr delay
+        +SetBorderColor 14
+        +SetBackgroundColor 0
+        +irqEnd $B2, irq2
+        inc $d019     ; acknowledge interrupt
+        jmp $ea31
+        
+irq2:
+        lda #$02
+        jsr delay
+        +SetBorderColor 14
+        +SetBackgroundColor 6
+sprite_change        
+        jsr sprite_move ; Einblenden
+        +irqEnd $72, irq1
+        inc $d019     ; acknowledge interrupt
+        jmp $ea31
+        
+
+!align 63,0
+sprite1
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte %11111111,%11111111,%11111111
+        !byte $00
+

@@ -8,22 +8,24 @@
 ;***********************************************************************
 ; Assembler: ACME
 
-!src "../../stdlib/stdlib.a"
-!src "../../stdlib/macros.asm"
+!src "../stdlib/stdlib.a"
+!src "../stdlib/macros.asm"
+;!src "../irqloader/loader.inc"
+
 ;.import source "../loader/loader.sym"
 
 VICSCREENBLOCKNO       = 1 ;Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 VICCHARSETBLOCKNO      = 6 ; 4=$2000 5=$2800, 6=$3000, 7=$3800
 
-RELEASE                = 1
+RELEASE                = 0
 
 MC_color2              = $0c
 MC_color1              = $0d
 BG_color               = $0b
 
 
-!if RELEASE { !set C_EXIT_PART = $c1ab } else { !set C_EXIT_PART = $fce2 }
-!if RELEASE { !set C_APPLY_INTERRUPT = $c19f } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
+!if RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
+!if RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
 
 !if RELEASE=0 {
 ;my Routine, that starts with a nice BASIC line
@@ -31,7 +33,7 @@ BG_color               = $0b
   !pet "faf world domination"
 }
 year = 1971
-!src "../../stdlib/basicstart_template.asm"
+!src "../stdlib/basicstart_template.asm"
 } else { *=$0A00 }
 
 !if RELEASE=0 {
@@ -239,7 +241,7 @@ screen_update:
         clc
         adc #$28
         sta tcnt+1
-        cmp #$A0
+        cmp #$C8
         bne weiter
         lda #$00
         sta counter
@@ -341,7 +343,7 @@ tabmaster:
         !byte $01, $01, $01, $01, $01, $01, $01, $01
         !byte $01, $01, $01, $01, $01, $01, $01, $01
 
-        !align 256,0
+        !align 255,0
         !ct scr
 text:
         !text "          welcome to xs dnite!          "
@@ -357,7 +359,8 @@ text:
 !bin "Nightshift.sid",,$7e
 
         *=$2000
-        !src "gfx.inc"
-
+        !src "tigger.txt"
+		;!src "gfx.inc"
+*=$3800
 char_data: ; Lade direkt und verschiebe später
         !bin "devils_collection_26_y.64c",,2

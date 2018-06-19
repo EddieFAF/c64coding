@@ -6,8 +6,9 @@
 ;**  Author (c): [FAF]Eddie                                           **
 ;**  File Date: 2018-04-11                                            **
 ;***********************************************************************
-!src "../../stdlib/stdlib.a"
-!src "../../stdlib/macros.asm"
+!src "../stdlib/stdlib.a"
+!src "../stdlib/macros.asm"
+!src "../irqloader/loader.inc"
 
 RELEASE = 1
 
@@ -23,8 +24,8 @@ C_CHARSET_HIGH           = $2100
 REG_ZERO_FE              = $fe
 REG_ZERO_FD              = $fd
 
-!if RELEASE { !set C_EXIT_PART = $c1ab } else { !set C_EXIT_PART = $fce2 }
-!if RELEASE { !set C_APPLY_INTERRUPT = $c19f } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
+!if RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
+!if RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
 
 !if RELEASE=0 { 
 ;my Routine, that starts with a nice BASIC line
@@ -874,6 +875,54 @@ fade_out_4:
 
         rts
 
+
+counter:            !byte $00
+
+scroll_speed:       !byte $01
+scroll_speed_4x4:   !byte $02
+
+fade_in_offset:     !byte 0
+fade_in_offset_low: !byte $00
+delay:              !byte $00
+fade_count:         !byte $00
+
+original_C10:       !byte $01
+original_C11:       !byte $00
+original_C20:       !byte $0e
+original_C30:       !byte $00
+original_C40:       !byte $08
+original_C41:       !byte $00
+original_C50:       !byte $01
+original_C51:       !byte $00
+
+
+*=$1000
+!bin "One_Man_and_His_Droid.sid",,$7e
+
+
+;***********************************************************************
+;**  Included Labled Data (Resources from external files) which the   **
+;**  compiler automatically (reserves and) assignes (a) (starting)    **
+;**  memory (address) for.                                            **
+;***********************************************************************
+!ct scr
+scroll1x1_text:     !text "dies ist ein scrolltext, der sehr lang ist und"
+                    !text " daher auch ueber viele zeilen gehen kann.... "
+                    !byte $00
+
+*=$2000
+CHARSET: !bin "aeg_collection_09.64c",,2
+; 4x4 dot matrix
+        !byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0e, $0e, $0e, $00
+        !byte $00, $00, $00, $00, $e0, $e0, $e0, $00, $00, $00, $00, $00, $ee, $ee, $ee, $00
+        !byte $0e, $0e, $0e, $00, $00, $00, $00, $00, $0e, $0e, $0e, $00, $0e, $0e, $0e, $00
+        !byte $0e, $0e, $0e, $00, $e0, $e0, $e0, $00, $0e, $0e, $0e, $00, $ee, $ee, $ee, $00
+        !byte $e0, $e0, $e0, $00, $00, $00, $00, $00, $e0, $e0, $e0, $00, $0e, $0e, $0e, $00
+        !byte $e0, $e0, $e0, $00, $e0, $e0, $e0, $00, $e0, $e0, $e0, $00, $ee, $ee, $ee, $00
+        !byte $ee, $ee, $ee, $00, $00, $00, $00, $00, $ee, $ee, $ee, $00, $0e, $0e, $0e, $00
+        !byte $ee, $ee, $ee, $00, $e0, $e0, $e0, $00, $ee, $ee, $ee, $00, $ee, $ee, $ee, $00
+
+; ************************************************************************** ;
 fade_table:
         ;high nibble=target color
         ;low nibble =source color
@@ -895,53 +944,6 @@ fade_table:
         !byte $06,$0d,$04,$0e,$0c,$0e,$0b,$0f,$0c,$02,$0c,$04,$0e,$03,$0e,$0e    ;e
         !byte $06,$0d,$08,$0f,$0c,$0f,$0b,$0f,$0c,$02,$0f,$04,$0f,$0f,$0f,$0f    ;f
 
-counter:            !byte $00
-
-scroll_speed:       !byte $01
-scroll_speed_4x4:   !byte $02
-
-fade_in_offset:     !byte 0
-fade_in_offset_low: !byte $00
-delay:              !byte $00
-fade_count:         !byte $00
-
-original_C10:       !byte $01
-original_C11:       !byte $00
-original_C20:       !byte $0e
-original_C30:       !byte $00
-original_C40:       !byte $08
-original_C41:       !byte $00
-original_C50:       !byte $01
-original_C51:       !byte $00
-
-!ct scr
-scroll1x1_text:     !text "dies ist ein scrolltext, der sehr lang ist und"
-                    !text " daher auch ueber viele zeilen gehen kann.... "
-                    !byte $00
-
-*=$1000
-!bin "One_Man_and_His_Droid.sid",,$7e
-
-
-;***********************************************************************
-;**  Included Labled Data (Resources from external files) which the   **
-;**  compiler automatically (reserves and) assignes (a) (starting)    **
-;**  memory (address) for.                                            **
-;***********************************************************************
-
-*=$2000
-CHARSET: !bin "aeg_collection_09.64c",,2
-; 4x4 dot matrix
-        !byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0e, $0e, $0e, $00
-        !byte $00, $00, $00, $00, $e0, $e0, $e0, $00, $00, $00, $00, $00, $ee, $ee, $ee, $00
-        !byte $0e, $0e, $0e, $00, $00, $00, $00, $00, $0e, $0e, $0e, $00, $0e, $0e, $0e, $00
-        !byte $0e, $0e, $0e, $00, $e0, $e0, $e0, $00, $0e, $0e, $0e, $00, $ee, $ee, $ee, $00
-        !byte $e0, $e0, $e0, $00, $00, $00, $00, $00, $e0, $e0, $e0, $00, $0e, $0e, $0e, $00
-        !byte $e0, $e0, $e0, $00, $e0, $e0, $e0, $00, $e0, $e0, $e0, $00, $ee, $ee, $ee, $00
-        !byte $ee, $ee, $ee, $00, $00, $00, $00, $00, $ee, $ee, $ee, $00, $0e, $0e, $0e, $00
-        !byte $ee, $ee, $ee, $00, $e0, $e0, $e0, $00, $ee, $ee, $ee, $00, $ee, $ee, $ee, $00
-
-; ************************************************************************** ;
 scroll_delay:       !byte $00
 scroll_delay_4x4:   !byte $00
 scroll4x4_text:     !text "hier kommt ein weiterer scrolltext, der auch sehr"

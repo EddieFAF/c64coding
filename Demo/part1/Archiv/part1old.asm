@@ -111,6 +111,15 @@ c10:
 c11:
         lda #$06
         sta VIC2ScreenColour
+        ldx #$0A            ; delay
+        dex
+        bne *-1
+c20:
+        lda #$0e
+        sta VIC2BorderColour
+c21:
+        lda #$06
+        sta VIC2ScreenColour
 
 subroutine:
         jsr charfade_warte
@@ -130,6 +139,23 @@ p1irq3:
         ldx #$0A            ; delay
         dex
         bne *-1
+c30:
+        lda #$0e
+        sta VIC2BorderColour
+c31:
+        lda #$06
+        sta VIC2ScreenColour
+        ldx #$0A            ; delay
+        dex
+        bne *-1
+        nop
+        nop
+c40:
+        lda #$0e
+        sta VIC2BorderColour
+c41:
+        lda #$06
+        sta VIC2ScreenColour
 
         lda part_done ; Wenn noch nicht Ende des Parts, dann p1irq, sonst p2irq1
         cmp #$01
@@ -479,9 +505,9 @@ border_out:
         tax
         lda fade_table,x
         sta c10+1
-        ;sta c20+1
-        ;sta c30+1
-        ;sta c40+1
+        sta c20+1
+        sta c30+1
+        sta c40+1
 
         lda c11+1
         and #$0f
@@ -489,9 +515,9 @@ border_out:
         tax
         lda fade_table,x
         sta c11+1
-        ;sta c21+1
-        ;sta c31+1
-        ;sta c41+1
+        sta c21+1
+        sta c31+1
+        sta c41+1
         rts
 
 bset_second_irq:
@@ -520,15 +546,15 @@ Original_c41: !byte $0e
 init_colors_pre:
         lda VIC2BorderColour
         sta c10+1
-        ;sta c30+1
-        ;sta c20+1
-        ;sta c40+1
+        sta c30+1
+        sta c20+1
+        sta c40+1
 
         lda VIC2ScreenColour
         sta c11+1
-        ;sta c31+1
-        ;sta c21+1
-        ;sta c41+1
+        sta c31+1
+        sta c21+1
+        sta c41+1
         rts
 ; -----------------------------------
 bpre_warte:
