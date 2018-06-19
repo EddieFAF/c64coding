@@ -9,46 +9,46 @@
 !cpu 6510
 !sl "fullpart.lbl"
 !initmem $ea        ; Speicher vorfüllen
-!src "../stdlib/macros.asm" ; Stellt ein paar Macros bereit
-!src "../stdlib/stdlib.a"
+!src "../../stdlib/macros.asm" ; Stellt ein paar Macros bereit
+!src "../../stdlib/stdlib.a"
 
 ;my Routine, that starts with a nice BASIC line
 !macro der_text {
   !pet "faf world domination"
 }
 year = 1971
-!src "../stdlib/basicstart_template.asm"
+!src "../../stdlib/basicstart_template.asm"
 
             ;jsr $0900   ; loader Init
-            jmp start
+            jmp .start
             *=$0900
-            !bin "../../install-c64.prg",,2
+            !bin "../../ACME/install-c64.prg",,2
             
             *=$9000
-            !bin "../../loader-c64.prg",,2
+            !bin "../../ACME/loader-c64.prg",,2
             
             * = $c000   ; Nach $c000 verlegen, da stört es die Parts nicht
 
-dela        !byte 00 
-tabcount    !byte 00
+.dela        !byte 00 
+.tabcount    !byte 00
 
 
 ; ---------------------------------------------------------------------------
 ; Sprite Linie - Routinen
 ; ---------------------------------------------------------------------------
-sprite_line_init:
+.sprite_line_init:
 ; ********************************
 ; ** Spritedaten initialisieren **
 ; ********************************
             ldx #0
--           lda sprite_line_data,X
+-           lda .sprite_line_data,X
             sta $0340,X
             inx
             cpx #63
             bne -
             rts
 
-sprite_line_set:
+.sprite_line_set:
 ; ********************************
 ; ** Sprites einrichten         **
 ; ********************************
@@ -74,7 +74,7 @@ sprite_line_set:
             sta $07fe
             sta $07ff
             ldx #$00
--           lda spr_pos,x
+-           lda .spr_pos,x
             sta VIC2Sprite0X,x
             inx
             cpx #$10
@@ -85,7 +85,7 @@ sprite_line_set:
             sta VIC2SpriteXMSB
             rts
 
-spr_pos:    !byte 158, 141
+.spr_pos:   !byte 158, 141
             !byte 158, 141
             !byte 158, 141
             !byte 158, 141
@@ -94,8 +94,8 @@ spr_pos:    !byte 158, 141
             !byte 182, 141
             !byte 182, 141
             !byte 182, 141
-        
-sprite_line_space:
+
+.sprite_line_space:
 ; **********************
 ; ** Warten auf Space
 ; **********************
@@ -103,10 +103,10 @@ sprite_line_space:
             sta $dc00
             lda $dc01
             and #$10
-            beq sprite_line_move
+            beq .sprite_line_move
             rts
 
-sprite_line_move:
+.sprite_line_move:
             ldx VIC2Sprite4X
             inx
             stx VIC2Sprite4X
@@ -119,20 +119,20 @@ sprite_line_move:
             dex
             stx VIC2Sprite0X
             cpx #134
-            beq sprite1
+            beq .sprite1
             cpx #110
-            beq sprite2
+            beq .sprite2
             cpx #86
-            beq sprite3
+            beq .sprite3
             cpx #62
-            beq sprite4
+            beq .sprite4
             cpx #38
-            beq sprite5
+            beq .sprite5
             cpx #20
-            beq sprite_line_stop
+            beq .sprite_line_stop
             rts
 
-sprite1:    ldx #134
+.sprite1:   ldx #134
             stx VIC2Sprite0X
             lda VIC2SpriteDoubleWidth
             ora #%00100010
@@ -143,26 +143,26 @@ sprite1:    ldx #134
             sta VIC2Sprite5X
             rts
 
-sprite2:    ldx #110
+.sprite2:   ldx #110
             stx VIC2Sprite2X
             ldx #230
             stx VIC2Sprite6X
             rts
-            
-sprite3:    ldx #86
+
+.sprite3:   ldx #86
             stx VIC2Sprite2X
             lda VIC2SpriteDoubleWidth
             ora #%01000100
             sta VIC2SpriteDoubleWidth
             rts
-            
-sprite4:    ldx #62
+
+.sprite4:   ldx #62
             stx VIC2Sprite3X
             ldx #022
             stx VIC2Sprite7X
             rts
 
-sprite5:    ldx #38
+.sprite5:   ldx #38
             stx VIC2Sprite3X
             lda VIC2SpriteDoubleWidth
             ora #%10001000
@@ -172,11 +172,11 @@ sprite5:    ldx #38
 ; **********************
 ; ** stoppe Bewegung
 ; **********************
-sprite_line_stop:
-            lda #<color_move
-            sta irq_jump_target+1
-            lda #>color_move
-            sta irq_jump_target+2
+.sprite_line_stop:
+            lda #<.color_move
+            sta .irq_jump_target+1
+            lda #>.color_move
+            sta .irq_jump_target+2
             lda #$00
             sta VIC2SpriteEnable
             rts
@@ -184,12 +184,12 @@ sprite_line_stop:
 ; **********************
 ; ** setze RTS
 ; **********************
-sprite_line_set_rts:
-            lda #<sprite_line_set_rts_exit
-            sta irq_jump_target+1
-            lda #>sprite_line_set_rts_exit
-            sta irq_jump_target+2
-sprite_line_set_rts_exit:
+.sprite_line_set_rts:
+            lda #<.sprite_line_set_rts_exit
+            sta .irq_jump_target+1
+            lda #>.sprite_line_set_rts_exit
+            sta .irq_jump_target+2
+.sprite_line_set_rts_exit:
             rts
 ; ---------------------------------------------------------------------------
 
@@ -197,32 +197,32 @@ sprite_line_set_rts_exit:
 ; ** Texteinblendung - Routinen **
 ; ********************************
 
-screen_init:
+.screen_init:
 ; ********************************
 ; ** Setzen der Farben
 ; ********************************
             ldx #$00
--           lda char_colors,x
+-           lda .char_colors,x
             sta $D968,x
-            lda char_colors+$18,x
+            lda .char_colors+$18,x
             sta $D980,x
             inx
             bne -
             rts
 
-sprite_text_init:
+.sprite_text_init:
 ; ********************************
 ; ** Spritedaten initialisieren **
 ; ********************************
 		    ldx #0
--   	    lda sprite_text_data,X
+-   	    lda .sprite_text_data,X
             sta $0340,X
  		    inx 
  		    cpx #63
             bne -
             rts
 
-sprite_text_set:
+.sprite_text_set:
 ; ********************************
 ; ** Sprites einrichten         **
 ; ********************************
@@ -246,36 +246,36 @@ sprite_text_set:
             sta VIC2SpriteDoubleHeight
             rts
 
-sprite_text_move:
+.sprite_text_move:
 ; **********************
 ; ** Text einblenden
 ; **********************
-            dec spr_counter
-            dec spr_counter
-            bne sprite_move_loop
-            ldx charpos
+            dec .spr_counter
+            dec .spr_counter
+            bne .sprite_move_loop
+            ldx .charpos
             cpx #$28
             bne +
-            jmp raster_set_space ; Warten auf Space setzen (neu: Part laden)
-+           lda char_screen,x
+            jmp .raster_set_space ; Warten auf Space setzen (neu: Part laden)
++           lda .char_screen,x
             sta $0568,x
-            lda char_screen+40,x
+            lda .char_screen+40,x
             sta $0590,x
-            lda char_screen+80,x
+            lda .char_screen+80,x
             sta $05B8,x
-            lda char_screen+120,x
+            lda .char_screen+120,x
             sta $05E0,x
-            lda char_screen+160,x
+            lda .char_screen+160,x
             sta $0608,x
-            lda char_screen+200,x
+            lda .char_screen+200,x
             sta $0630,x
-            lda char_screen+240,x
+            lda .char_screen+240,x
             sta $0658,x
 
             lda #$08
-            sta spr_counter
-            inc charpos
-sprite_move_loop:
+            sta .spr_counter
+            inc .charpos
+.sprite_move_loop:
             inc VIC2Sprite0X
             inc VIC2Sprite0X
             inc VIC2Sprite1X
@@ -285,17 +285,17 @@ sprite_move_loop:
             sta VIC2SpriteXMSB
 +           rts
 
-sprite_back:
+.sprite_back:
 ; **********************
 ; ** Text ausblenden
 ; **********************
-            dec spr_counter
-            dec spr_counter
-            bne sprite_back_loop
-            ldx charpos
+            dec .spr_counter
+            dec .spr_counter
+            bne .sprite_back_loop
+            ldx .charpos
             cpx #$00
             bne +
-            jmp set_fadeout 
+            jmp .set_fadeout 
 +           lda #$20
             sta $0568,x
             sta $0590,x
@@ -306,9 +306,9 @@ sprite_back:
             sta $0658,x
 
             lda #$08
-            sta spr_counter
-            dec charpos
-sprite_back_loop:
+            sta .spr_counter
+            dec .charpos
+.sprite_back_loop:
             dec VIC2Sprite0X
             dec VIC2Sprite0X
             dec VIC2Sprite1X
@@ -318,49 +318,49 @@ sprite_back_loop:
             sta VIC2SpriteXMSB
 +           rts
 
-sprite_set_back:
+.sprite_set_back:
 ; **********************
-; ** Setze Zeichen l?schen
+; ** Setze Zeichen löschen
 ; **********************
-            lda #<sprite_back
-            sta sprite_change_2+1
-            lda #>sprite_back
-            sta sprite_change_2+2
+            lda #<.sprite_back
+            sta .sprite_change_2+1
+            lda #>.sprite_back
+            sta .sprite_change_2+2
 
             lda #$03
             sta VIC2SpriteEnable
             lda #$28
-            sta charpos
+            sta .charpos
             lda #$08
-            sta spr_counter
+            sta .spr_counter
             rts
 
-sprite_set_rts:
+.sprite_set_rts:
 ; **********************
 ; ** setze RTS
 ; **********************
-            lda #<sprite_set_rts_exit
-            sta sprite_change_2+1
-            lda #>sprite_set_rts_exit
-            sta sprite_change_2+2
+            lda #<.sprite_set_rts_exit
+            sta .sprite_change_2+1
+            lda #>.sprite_set_rts_exit
+            sta .sprite_change_2+2
             lda #$00
             sta VIC2SpriteEnable ;Sprites abschalten
-sprite_set_rts_exit:
+.sprite_set_rts_exit:
             rts
 
-raster_set_space:
+.raster_set_space:
 ; **********************
 ; ** setze 'Warten auf Space'
 ; **********************
-            lda #<wait_space
-            sta sprite_change_2+1
-            lda #>wait_space
-            sta sprite_change_2+2
+            lda #<.wait_space
+            sta .sprite_change_2+1
+            lda #>.wait_space
+            sta .sprite_change_2+2
             lda #$00
             sta VIC2SpriteEnable
             rts
 
-wait_space:
+.wait_space:
 ; **********************
 ; ** Warten auf Space
 ; **********************
@@ -369,18 +369,18 @@ wait_space:
             lda $dc01
             and #$10
             bne +
-            jmp sprite_set_back
+            jmp .sprite_set_back
 +           rts
 
 ; **********************
-spr_counter: !byte 08
-charpos:     !byte 00
+.spr_counter: !byte 08
+.charpos:     !byte 00
 
 
-charset_colors:
+.charset_colors:
 !byte 14,0
 
-char_screen:
+.char_screen:
 !byte 32,32,32,32,32,32,112,64,110,32,32,32,32,96,96,96,96,96,32,32,112,64,114,64,110,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
 !byte 32,64,32,64,64,32,93,32,66,32,112,64,64,64,114,64,64,64,114,64,125,32,107,64,91,64,64,64,114,64,64,64,110,32,64,64,32,64,32,32
 !byte 32,32,32,32,32,32,66,32,66,32,66,32,66,32,107,64,125,32,66,32,66,32,66,32,66,32,66,32,66,32,66,32,66,32,32,32,32,32,32,32
@@ -389,7 +389,7 @@ char_screen:
 !byte 32,64,32,64,64,32,109,64,64,64,113,64,64,64,113,64,64,64,113,64,64,64,113,64,113,64,113,64,91,64,110,32,66,32,64,64,32,64,32,32
 !byte 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,109,64,64,64,125,32,32,32,32,32,32,32
 
-char_colors:
+.char_colors:
 !byte 14,14,14,14,14,14,1,15,10,14,14,14,14,1,1,1,1,1,14,14,1,1,1,1,1,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 !byte 14,11,14,12,1,14,15,14,8,14,9,11,12,15,1,1,1,1,1,1,1,14,1,1,1,1,1,1,1,1,1,13,15,14,1,12,14,11,14,14
 !byte 14,14,14,14,14,14,10,14,11,14,11,14,15,14,1,1,1,14,1,14,1,14,1,14,1,14,1,14,1,14,13,14,3,14,14,14,14,14,14,14
@@ -405,55 +405,55 @@ char_colors:
 ; **********************
 ; ** Setze Zeichen löschen
 ; **********************
-set_fadeout:
-            lda #<fade_out
-            sta sprite_change_2+1
-            lda #>fade_out
-            sta sprite_change_2+2
+.set_fadeout:
+            lda #<.fade_out
+            sta .sprite_change_2+1
+            lda #>.fade_out
+            sta .sprite_change_2+2
             lda #$00
-            sta tabcount
-            sta dela
+            sta .tabcount
+            sta .dela
             rts
 
-fade_out:   ldx dela
+.fade_out:   ldx .dela
             inx
-            stx dela
+            stx .dela
             cpx #$04
-            beq col_fade
+            beq .col_fade
             rts
 
-col_fade:   ldx #$00
-            stx dela
-            ldx tabcount
+.col_fade:   ldx #$00
+            stx .dela
+            ldx .tabcount
             inx
-            stx tabcount
+            stx .tabcount
             cpx #$08
-            bne col_cont
-            jmp sprite_set_rts
+            bne .col_cont
+            jmp .sprite_set_rts
 
-col_cont:   ldx tabcount
-            lda fade_tab1,x
-            sta raster1a+1
-            sta raster1b+1
-            lda fade_tab2,x
-            sta raster2+1
-            lda fade_tab3,x
-            sta raster3a+1
-            sta raster3b+1
+.col_cont:   ldx .tabcount
+            lda .fade_tab1,x
+            sta .raster1a+1
+            sta .raster1b+1
+            lda .fade_tab2,x
+            sta .raster2+1
+            lda .fade_tab3,x
+            sta .raster3a+1
+            sta .raster3b+1
             rts
 
-fade_tab1: ; Raster
+.fade_tab1: ; Raster
             !byte $01, $0f, $0a, $08, $0c, $09, $0b, $00
 
-fade_tab2: ; Hintergrund
+.fade_tab2: ; Hintergrund
             !byte $06, $0e, $03, $01, $03, $0e, $06, $00
 
-fade_tab3: ; Rahmen
+.fade_tab3: ; Rahmen
             !byte $0e, $0e, $03, $01, $03, $0e, $06, $00
 ; ---------------------------------------------------------------------------
 
 ; **********************
-start:
+.start:
 
 RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
  
@@ -461,13 +461,13 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             +SetBorderColor 14
             +SetBackgroundColor 6
 
-            jsr sprite_line_init
-            jsr sprite_line_set
+            jsr .sprite_line_init
+            jsr .sprite_line_set
 
             sei                                 ;IRQs sperren
-            lda #<myIRQ                         ;Adresse unserer Routine in
+            lda #<.myIRQ                         ;Adresse unserer Routine in
             sta IRQServiceRoutineLo             ;den RAM-Vektor
-            lda #>myIRQ
+            lda #>.myIRQ
             sta IRQServiceRoutineHi
             lda #%00000001                      ;Raster-IRQs vom VIC-II aktivieren
             sta VIC2InteruptControl
@@ -486,15 +486,14 @@ RASTER          = $6f                       ;Hier den 1. Raster-IRQ auslösen
             jmp *
  
 ;*** an Pagegrenze ausrichten, damit die Sprünge passen
-!zone
 !align 255,0
  
-myIRQ:      lda #<doubleIRQ
+.myIRQ:      lda #<.doubleIRQ
             sta IRQServiceRoutineLo
-            lda #>doubleIRQ
+            lda #>.doubleIRQ
             sta IRQServiceRoutineHi
             tsx
-            stx doubleIRQ+1
+            stx .doubleIRQ+1
             nop
             nop
             nop
@@ -515,7 +514,7 @@ myIRQ:      lda #<doubleIRQ
             nop
             nop
 
-doubleIRQ:  ldx #$00
+.doubleIRQ:  ldx #$00
             txs
             nop
             nop
@@ -526,21 +525,21 @@ doubleIRQ:  ldx #$00
             lda #$01
             cpx $D012
 
-            beq myIRQMain
+            beq .myIRQMain
 
-myIRQMain:  ldx #$ff
-nextColor:  inx                                 ;Schleifenzähler erhöhen
-            ldy delaytable,X                    ;Wartezeit holen
+.myIRQMain:  ldx #$ff
+.nextColor:  inx                                 ;Schleifenzähler erhöhen
+            ldy .delaytable,X                    ;Wartezeit holen
             dey                                 ;verringern
             bne *-1                             ;solange größer 0 zurück zum DEY
-            lda rowcolortable,X                 ;Farbe holen
+            lda .rowcolortable,X                 ;Farbe holen
             sta VIC2ScreenColour                ;und ins Register für die Hintergrundfarbe
             cpx #$42
-            bne nextColor                       ;solange die Farbe positiv ist -> @loop
+            bne .nextColor                       ;solange die Farbe positiv ist -> @loop
             +SetBackgroundColor 6
-            lda #<myIRQ                         ;Original IRQ-Vektor setzen
+            lda #<.myIRQ                         ;Original IRQ-Vektor setzen
             sta IRQServiceRoutineLo
-            lda #>myIRQ
+            lda #>.myIRQ
             sta IRQServiceRoutineHi
 
             lda #RASTER
@@ -548,20 +547,20 @@ nextColor:  inx                                 ;Schleifenzähler erhöhen
 
             lda #%00000001                      ;IRQ bestätigen
             sta VIC2InteruptStatus
-irq_jump_target:
-            jsr sprite_line_move
+.irq_jump_target:
+            jsr .sprite_line_move
             jmp $ea81                           ;zum Ende des 'Timer-Interrupts' springen
 
 ; *************************************************
 ; ** Vorbereitung auf neue IRQ Routinen          **
 ; *************************************************
-set_new_irq:
+.set_new_irq:
             lda #$15                            ; Kleinbuchstaben
             sta VIC2MemorySetup
 
-            jsr screen_init                     ; Bildschirm vorbereiten
-            jsr sprite_text_init                ; Sprites vorbereiten
-            jsr sprite_text_set                 ; Sprites einschalten
+            jsr .screen_init                     ; Bildschirm vorbereiten
+            jsr .sprite_text_init                ; Sprites vorbereiten
+            jsr .sprite_text_set                 ; Sprites einschalten
         ; register first interrupt
             sei
             lda #$7f
@@ -569,7 +568,7 @@ set_new_irq:
             sta CIA1InterruptControl
             and VIC2ScreenControlV                 ; clear high bit of raster line
             sta VIC2ScreenControlV
-            +irqEnd $71, irq1
+            +irqEnd $71, .irq1
             lda #$01                            ; enable raster interrupts
             sta VIC2InteruptControl
             cli
@@ -578,94 +577,94 @@ set_new_irq:
 ; ************************************************
 ; ** IRQ Routinen                               **
 ; ************************************************
-irq1:       ldx #$05
+.irq1:       ldx #$05
             dex
             bne *-1
-raster3a:   lda #$0e
+.raster3a:   lda #$0e
             sta VIC2BorderColour
-raster1a:   lda #$01
+.raster1a:   lda #$01
             sta VIC2ScreenColour
             ldx #$08
             dex
             bne *-1
             lda #$00
             sta VIC2ScreenColour
-            +irqEnd $B0, irq2
+            +irqEnd $B0, .irq2
             inc VIC2InteruptStatus     ; acknowledge interrupt
             jmp $ea31
 
-irq2:       lda #$B2
+.irq2:       lda #$B2
             cmp $d012
             bne *-3
             ldx #$09
             dex
             bne *-1
-raster3b:   lda #$0e
+.raster3b:   lda #$0e
             sta VIC2BorderColour
-raster1b:   lda #$01
+.raster1b:   lda #$01
             sta VIC2ScreenColour
             ldx #$04
             dex
             bne *-1
-raster2:    lda #$06
+.raster2:    lda #$06
             sta VIC2ScreenColour
-sprite_change_2        :
-            jsr sprite_text_move ; Einblenden
-            +irqEnd $71, irq1
+.sprite_change_2:
+            jsr .sprite_text_move ; Einblenden
+            +irqEnd $71, .irq1
             inc VIC2InteruptStatus      ; acknowledge interrupt
             jmp $ea31
 
 ; ---------------------------------------------------------------------------
 ; R A S T E R - R O U T I N E N
 ; ---------------------------------------------------------------------------
-color_move: ldx dela
+.color_move: ldx .dela
             inx
-            stx dela
+            stx .dela
             cpx #$02
-            beq col_mov
+            beq .col_mov
             rts
 
-col_mov:    ldx #$00
-            stx dela
-            ldx tabcount
+.col_mov:    ldx #$00
+            stx .dela
+            ldx .tabcount
             inx
-            stx tabcount
+            stx .tabcount
             cpx #$21
             bne +
-            jmp set_new_irq
+            jmp .set_new_irq
 +           ldx #$00
--           lda rowcolor1+$02,x
-            sta rowcolortable,x
+-           lda .rowcolor1+$02,x
+            sta .rowcolortable,x
             inx
             cpx #$21
             bne -
 
             ldx #$00
--           lda rowcolor2,x
-            sta rowcolortable+$21,x
+-           lda .rowcolor2,x
+            sta .rowcolortable+$21,x
             inx
             cpx #$21
             bne -
-            jsr copy_tabs
+            jsr .copy_tabs
             rts
 
 ;umkopieren der Tabellen
-copy_tabs:  ldx #$00
--           lda rowcolor1+1,x
-            sta rowcolor1,x
+.copy_tabs:  ldx #$00
+-           lda .rowcolor1+1,x
+            sta .rowcolor1,x
             inx
             cpx #$22
             bne -
             lda #$00
-            sta rowcolor1+$22
+            sta .rowcolor1+$22
 
             ldx #$22
--           lda rowcolor2,x
-            sta rowcolor2+1,x
+-           lda .rowcolor2,x
+            sta .rowcolor2+1,x
             dex
             bpl -
             lda #$00
-            sta rowcolor2
+            sta .rowcolor2
             rts
 
 
@@ -674,7 +673,7 @@ copy_tabs:  ldx #$00
 ; ---------------------------------------------------------------------------
 
 !align 63,0
-sprite_line_data:
+.sprite_line_data:
             !byte %00000000,%00000000,%00000000
             !byte %00000000,%00000000,%00000000
             !byte %00000000,%00000000,%00000000
@@ -699,7 +698,7 @@ sprite_line_data:
             !byte $00
 
 !align 63,0
-sprite_text_data:
+.sprite_text_data:
             !byte %11111111,%11111111,%11111111
             !byte %11111111,%11111111,%11111111
             !byte %11111111,%11111111,%11111111
@@ -725,7 +724,7 @@ sprite_text_data:
 ; ---------------------------------------------------------------------------
 
 !align 255,0
-delaytable:
+.delaytable:
             !byte 9                            ;letzte Zeile vor der Anzeige
             !byte 2, 8, 8, 9, 9, 9, 9, 9       ; 1. Textzeile
             !byte 2, 8, 8, 9, 9, 9, 9, 10      ; 2.
@@ -745,16 +744,16 @@ delaytable:
             !byte 2, 8, 8, 9, 9, 9, 9, 9       ;14.
             !byte 2, 8, 8, 9, 9, 9, 9, 9       ;15.
 
-rowcolortable: !fill $50,6
+.rowcolortable: !fill $50,6
 
-rowcolor1:
+.rowcolor1:
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte 6, 6, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             !byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             !byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             !byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-rowcolor2:
+.rowcolor2:
             !byte 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
             !byte 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
