@@ -1,1 +1,0 @@
-c:\Users\DKX80DG\Downloads\C64\Tools\WinVICE-3.1-x86\x64.exe -iecdevice8 -device8 1 -fs8 drive $1
