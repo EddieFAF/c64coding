@@ -6,11 +6,11 @@
 ;**  Author (c): [FAF]Eddie                                           **
 ;**  File Date: 2018-04-11                                            **
 ;***********************************************************************
-!src "../stdlib/stdlib.a"
-!src "../stdlib/macros.asm"
-!src "../irqloader/loader.inc"
+!src "../../stdlib/stdlib.a"
+!src "../../stdlib/macros.asm"
+!src "loader.inc"
 
-RELEASE = 1
+.RELEASE = 0
 
                         ; constants
 C_SCREEN_RAM             = $0400
@@ -24,10 +24,10 @@ C_CHARSET_HIGH           = $2100
 REG_ZERO_FE              = $fe
 REG_ZERO_FD              = $fd
 
-!if RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
-!if RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
+!if .RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
+!if .RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
 
-!if RELEASE=0 { 
+!if .RELEASE=0 {
 ;my Routine, that starts with a nice BASIC line
 !macro der_text {
   !pet "faf world domination"
@@ -36,7 +36,7 @@ year = 1971
 !src "../../stdlib/basicstart_template.asm"
 } else { *=$0A00 }
 
-!if RELEASE=0 {
+!if .RELEASE=0 {
         jmp sync_intro
 APPLY_INTERRUPT:
         sta $D012
@@ -55,7 +55,7 @@ sync_intro:
         lda #$00
         jsr $1000
 
-!if RELEASE=0 {
+!if .RELEASE=0 {
         sei
         lda #$7f
         sta $dc0d     ; turn off the CIA interrupts
@@ -408,7 +408,7 @@ fade_in:
         sta p1subroutine+2
         ldx #$00
 +       stx fade_count
-        
+
         lda original_C10 ;hole zielfarbe
         asl ;und schiebe ins high nibble
         asl
@@ -429,8 +429,8 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
-        lda c11+1 
+        sta fade_in_offset
+        lda c11+1
         and #$0f
         ora fade_in_offset
         tax
@@ -442,7 +442,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c20+1
         and #$0f
         ora fade_in_offset
@@ -455,7 +455,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c30+1
         and #$0f
         ora fade_in_offset
@@ -468,7 +468,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c40+1
         and #$0f
         ora fade_in_offset
@@ -481,7 +481,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c41+1
         and #$0f
         ora fade_in_offset
@@ -494,7 +494,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c50+1
         and #$0f
         ora fade_in_offset
@@ -507,7 +507,7 @@ fade_in:
         asl
         asl
         asl
-        sta fade_in_offset 
+        sta fade_in_offset
         lda c51+1
         and #$0f
         ora fade_in_offset
@@ -664,7 +664,7 @@ skip_shift_2:
         adc REG_ZERO_FE
         adc #064
 
-scroller_render_offset: 
+scroller_render_offset:
         ldy REG_ZERO_FD
         sta scroll_line_4x4 + $27, y
         tya
@@ -711,7 +711,7 @@ fade_out:
         sta subroutine+2
         ldx #$00
 +       stx fade_count
-        
+
         lda #$00 ;hole zielfarbe
         asl ;und schiebe ins high nibble
         asl
@@ -752,7 +752,7 @@ fade_out_2:
 
         ldx #$00
 +       stx fade_count
-        
+
         lda #$00
         asl
         asl
@@ -806,7 +806,7 @@ fade_out_3:
 
         ldx #$00
 +       stx fade_count
-        
+
         lda #$00 ;hole zielfarbe
         asl
         asl
@@ -829,7 +829,7 @@ fade_out_3:
 
         rts
 
-; Fade Out Top Charset 
+; Fade Out Top Charset
 fade_out_all_4:
         ldx delay
         inx
@@ -847,10 +847,10 @@ fade_out_4:
         inx
         cpx #$10
         bne +
-		jmp C_EXIT_PART
+        jmp C_EXIT_PART
         ldx #$00
 +       stx fade_count
-        
+
         lda #$00 ;hole zielfarbe
         asl
         asl
