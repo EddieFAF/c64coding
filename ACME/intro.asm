@@ -4,23 +4,17 @@
 !byte $0c,$08,$0a,$00,$9e,$32,$30,$36,$34,$00,$00,$00,$00
 
 
-!src "stdlib/stdlib.a"
-!src "stdlib/macros.asm"
+!src "../stdlib/stdlib.a"
+!src "../stdlib/macros.asm"
 
         Zeilenstart = $6A ; erste Rasterzeile von Bildschirmzeile 08
-        Zeilenende  = $C1 ; Letzte Rasterzeile von Bildschirmzeile 18
-        C_D18       = $FB
-        C_D16       = $FC
+        Zeilenende  = $BF ; Letzte Rasterzeile von Bildschirmzeile 18
         C_CHAR    = $3800
         C_DELAY   = $04
 
 ; ----------------------------------------
 start:  sei         ; set up interrupt
         jsr $e544
-        lda $d018
-        sta C_D18
-        lda $d016
-        sta C_D16
         lda #$00
         sta $d020
         sta $d021
@@ -32,7 +26,7 @@ start:  sei         ; set up interrupt
 
         ;Grafik kopieren
         ldx #$00
--:      lda grafik,x
+-       lda grafik,x
         sta $2000,x
         lda grafik+$100,x
         sta $2100,x
@@ -63,7 +57,7 @@ start:  sei         ; set up interrupt
 
 ; Fill Screen
         ldx #$00
--:      lda #$00
+-       lda #$00
         sta $0400+7*40,x ; Zeile 8
         lda #$01
         sta $0400+17*40,x ; Zeile 18
@@ -90,11 +84,11 @@ start:  sei         ; set up interrupt
 ; BEGIN IRQ Verlauf
 
 ; Zeichensatz ausschalten
-irq1:   lda C_D18 ;#$14 ;font
+irq1:   lda #$16 ;font
         sta $d018
         lda #$1b
         sta $d011
-        lda C_D16 ;#$08
+        lda #$C8 ;#$08
         sta $d016
 
         +irqEnd $32, irq2
@@ -103,12 +97,7 @@ irq1:   lda C_D18 ;#$14 ;font
         jmp $ea31
 
 ; Zeile 48 (Logo)
-irq2:   lda #Zeilenstart-2
-        sta $d012
-irq2l:  ldx #<irq3
-irq2h:  ldy #>irq3
-        stx $0314
-        sty $0315
+irq2:
         lda #$00
         sta $d020
         sta $d021
@@ -120,28 +109,37 @@ irq2h:  ldy #>irq3
         sta $d018
         lda #$18
         sta $d016
+
+        lda #Zeilenstart-2
+        sta $d012
+irq2l:  ldx #<irq3
+irq2h:  ldy #>irq3
+        stx $0314
+        sty $0315
         inc $d019     ; acknowledge interrupt
         jmp $ea31
 
 ; ----------------------------------------
 ; - Rasterlinie oben
 ; ----------------------------------------
-irq3:   lda #Zeilenstart ; Startzeile
+irq3:
+        lda #Zeilenstart ; Startzeile
         cmp $d012
         bne *-3
         ldx #$0A ; Delay
         dex
         bne *-1
-        lda #$08
+        lda #$C8
         sta $d016
         lda #$1b
         sta $d011
         lda #$1E ; Zeichensatz bei $3800 einschalten
         sta $d018
+
         lda #Zeilenstart+2
         cmp $d012
         bne *-3
-        ldx #$09
+        ldx #$0A
         dex
         bne *-1
         ldy colcount
@@ -155,14 +153,26 @@ irq3:   lda #Zeilenstart ; Startzeile
         sta $d020
         sta $d021
 
-        +irqEnd Zeilenende-3, irq4
+        lda #Zeilenstart+8
+        cmp $d012
+        bne *-3
+        lda #$16
+        sta $d018
+
+        +irqEnd Zeilenende-11, irq4
         inc $d019     ; acknowledge interrupt
         jmp $ea31
 
 ; ----------------------------------------
 ; - Rasterlinie unten
 ; ----------------------------------------
-irq4:   lda #Zeilenende ; Endzeile
+irq4:   lda #Zeilenende-4
+        cmp $d012
+        bne *-3
+        lda #$1E
+        sta $d018
+
+        lda #Zeilenende ; Endzeile
         cmp $d012
         bne *-3
         ldx #$0A ; Delay
@@ -178,10 +188,17 @@ irq4:   lda #Zeilenende ; Endzeile
         lda #$00
         sta $d020
         sta $d021
+
+        lda #Zeilenende+2
+        cmp $d012
+        bne *-3
+        ldx #$0b
+        dex
+        bne *-1
         ; Zeichensatz ausschalten
-        lda C_D18
+        lda #$16
         sta $d018
-        lda C_D16
+        lda #$C8
         sta $d016
 
 sub:    jsr col_update
@@ -204,7 +221,7 @@ irqn3:  lda #Zeilenstart ; Startzeile
         sta $d016
         lda #$1b
         sta $d011
-        lda #$14 ; Zeichensatz ausschalten
+        lda #$15 ; Zeichensatz ausschalten
         sta $d018
         lda #Zeilenstart+2
         cmp $d012
@@ -223,7 +240,7 @@ irqn3:  lda #Zeilenstart ; Startzeile
         sta $d020
         sta $d021
 
-        +irqEnd Zeilenende-3, irq4
+        +irqEnd Zeilenende-11, irq4
         inc $d019     ; acknowledge interrupt
         jmp $ea31
 
@@ -246,16 +263,19 @@ weiter: ldx #C_DELAY
         ldy #>ret
         sta sub+1
         sty sub+2
-        lda #<irqn3
-        ldy #>irqn3
-        sta irq2l+1
-        sty irq2h+1
+        ; lda #<irqn3
+        ; ldy #>irqn3
+        ; sta irq2l+1
+        ; sty irq2h+1
 ; Fill Screen with text
         ldx #$00
--       lda screen_text,x
+-       lda #$00
+        sta $d800+8*40,x
+        sta $d868+8*40,x
+        lda screen_text,x
         sta $0400+8*40,x
-        lda screen_text+$B8,x
-        sta $04B8+8*40,x
+        lda screen_text+$68,x
+        sta $0468+8*40,x
         inx
         bne -
 
@@ -312,7 +332,7 @@ screen_text: ;!text "                                        "
              !text "           w e l c o m e                "
              !text "     the screen. no more coding...      "
              !text "  Here goes the text in the middle of   "
-             !text " * * * * * * * * * * * * * * * * * * * *"
+*=$2000
 grafik: 
 !src "mp_eddie.txt"
 
@@ -332,6 +352,6 @@ intro_char: !byte %00000000
             !byte %00000000
             !byte %00000000
             !byte %00000000
-            !byte %00000000
-            !byte %00000000
             !byte %11111111
+            !byte %00000000
+            !byte %00000000
