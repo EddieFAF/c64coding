@@ -7,36 +7,31 @@
 ;**  File Date: 2018-04-11                                            **
 ;***********************************************************************
 ; Assembler: ACME
+.RELEASE                = 0
 
-!src "../stdlib/stdlib.a"
-!src "../stdlib/macros.asm"
-;!src "../irqloader/loader.inc"
+!src "../../stdlib/stdlib.a"
+!src "../../stdlib/macros.asm"
+!src "loader.inc"
 
 ;.import source "../loader/loader.sym"
 
 VICSCREENBLOCKNO       = 1 ;Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 VICCHARSETBLOCKNO      = 6 ; 4=$2000 5=$2800, 6=$3000, 7=$3800
 
-RELEASE                = 0
 
-MC_color2              = $0c
-MC_color1              = $0d
-BG_color               = $0b
+!if .RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
+!if .RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
 
-
-!if RELEASE { !set C_EXIT_PART = exit_intro_part } else { !set C_EXIT_PART = $fce2 }
-!if RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = APPLY_INTERRUPT }
-
-!if RELEASE=0 {
+!if .RELEASE=0 {
 ;my Routine, that starts with a nice BASIC line
 !macro der_text {
   !pet "faf world domination"
 }
 year = 1971
-!src "../stdlib/basicstart_template.asm"
+!src "../../stdlib/basicstart_template.asm"
 } else { *=$0A00 }
 
-!if RELEASE=0 {
+!if .RELEASE=0 {
         jmp sync_intro
 APPLY_INTERRUPT:
         sta $D012
@@ -45,7 +40,6 @@ APPLY_INTERRUPT:
         jmp $ea81
 }
 
-!zone Main
 sync_intro:
         lda #$00
         sta $0286
@@ -55,7 +49,7 @@ sync_intro:
         lda #$00
         sta VIC2BorderColour
         sta VIC2ScreenColour
-!if RELEASE=0 {
+!if .RELEASE=0 {
         sei
         lda #$7f
         sta $dc0d     ; turn off the CIA interrupts
