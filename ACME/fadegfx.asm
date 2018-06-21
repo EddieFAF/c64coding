@@ -5,8 +5,8 @@
 .startzeile = 0 ; Erste Zeile
 .endzeile   = 7 ; Letzte Zeile
 
-!src "stdlib/stdlib.a"
-!src "stdlib/macros.asm"
+!src "../stdlib/stdlib.a"
+!src "../stdlib/macros.asm"
 
 !if .RELEASE { !set C_APPLY_INTERRUPT = apply_interrupt } else { !set C_APPLY_INTERRUPT = .APPLY_INTERRUPT }
 
@@ -43,7 +43,7 @@
         cli
         jmp *
 
-        
+
 .p1irq1:
         inc VIC2InteruptStatus     ; acknowledge interrupt
         lda #$00
