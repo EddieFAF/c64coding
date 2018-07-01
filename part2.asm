@@ -4,8 +4,8 @@
 !byte $0c,$08,$0a,$00,$9e,$32,$30,$36,$34,$00,$00,$00,$00
 
 
-!src "c64coding-master/stdlib/stdlib.a"
-!src "c64coding-master/stdlib/macros.asm"
+!src "stdlib/stdlib.a"
+!src "stdlib/macros.asm"
 
 *=$0810
             ; Vorbereitungen -------------------------------------------------]
@@ -89,9 +89,9 @@ start:      sei                     ; set up interrupt
             lda #$C8 ;#$08
             sta $d016
 
-            inc $d020
+;            inc $d020
 sub:        jsr .sprite_move1
-            dec $d020
+;            dec $d020
 
             inc $d019     ; acknowledge interrupt
             jmp $ea31
@@ -164,7 +164,7 @@ subtr:      sbc #$00
             bne .scr_pos
 ;            ldx #$00
 ;            stx .sprite_pos_count
-.spr_weiter: 
+.spr_weiter:
             rts
 
 
@@ -185,7 +185,7 @@ subtr:      sbc #$00
 .sprite_line_data:
 ;                        765432107654321076543210
             +SpriteLine %########################
-            +SpriteLine %........................
+            +SpriteLine %########################
             +SpriteLine %########################
             +SpriteLine %########################
             +SpriteLine %########################
