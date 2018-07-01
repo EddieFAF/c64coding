@@ -1,0 +1,34 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "C:\\Users\\horn\\Downloads\\C64\\Source\\c64coding"
+          source: "C:\\Users\\horn\\Downloads\\C64\\Source\\c64coding\\.build-tools.cson"
+          name: "Build ACME"
+          command: "c:\\\\Users\\\\horn\\\\Downloads\\\\C64\\\\Tools\\\\ACME\\\\acme.exe -v3 -o %e.prg -f cbm %f"
+          wd: "."
+          env: {}
+          modifier:
+            env:
+              PATH: "C:\\\\Users\\\\horn\\\\Downloads\\\\C64\\\\Tools\\\\ACME\\\\"
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: false
+              stdin: false
+          version: 2
+        }
+      ]
+  }
+]
