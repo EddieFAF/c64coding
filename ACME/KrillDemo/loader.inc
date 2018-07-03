@@ -31,7 +31,6 @@
 	ZPRS232ByteBuffer	= $aa	; unused
 	VIC2Colour_Purple	= $4	; unused
 	SECOND	= $ff93	; unused
-	ZPTapeTimingConstant	= $b0	; unused
 	SIDPaddleY	= $d41a	; unused
 	ZPCurrentKeyPressed	= $cb	; unused
 	KERNALROM	= $e000	; unused
@@ -126,6 +125,7 @@
 	VIC2Sprite5Colour	= $d02c	; unused
 	SAVE	= $ffd8	; unused
 	JoystickBits_Left	= $4
+	fade_table	= $1600	; ?
 	VIC2Sprite4Colour	= $d02b	; unused
 	loader_zp_last	= $f0	; unused
 	SCREEN	= $ffed	; unused

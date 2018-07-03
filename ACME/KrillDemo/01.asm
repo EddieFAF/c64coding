@@ -462,7 +462,7 @@ REG_ZERO_FD              = $fd
         sta .p1subroutine+2
         ldx #$00
 +       stx .fade_count
-        
+
         lda .original_C10 ;hole zielfarbe
         asl ;und schiebe ins high nibble
         asl
@@ -475,7 +475,7 @@ REG_ZERO_FD              = $fd
         ;akku zeigt jetzt auf tabelle targetcolor*16+currentcolor
         ;also auf die richtige zeile und spalte in der tabelle!
         tax ;akku nach X
-        lda .fade_table,x ;hole fade value
+        lda fade_table,x ;hole fade value
         sta .c10+1
 
         lda .original_C11
@@ -483,12 +483,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
-        lda .c11+1 
+        sta .fade_in_offset
+        lda .c11+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c11+1
 
         lda .original_C20
@@ -496,12 +496,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c20+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c20+1
 
         lda .original_C30
@@ -509,12 +509,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c30+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c30+1
 
         lda .original_C40
@@ -522,12 +522,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c40+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c40+1
 
         lda .original_C41
@@ -535,12 +535,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c41+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c41+1
 
         lda .original_C50
@@ -548,12 +548,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c50+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c50+1
 
         lda .original_C51
@@ -561,12 +561,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .c51+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .c51+1
 
 ; -----------------------
@@ -575,12 +575,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .m10+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .m10+1
 
         lda .original_M1
@@ -588,12 +588,12 @@ REG_ZERO_FD              = $fd
         asl
         asl
         asl
-        sta .fade_in_offset 
+        sta .fade_in_offset
         lda .m11+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .m11+1
 
         lda .original_M2
@@ -606,7 +606,7 @@ REG_ZERO_FD              = $fd
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .m12+1
 
 ; --------------------------------
@@ -759,7 +759,7 @@ REG_ZERO_FD              = $fd
         adc REG_ZERO_FE
         adc #064
 
-.scroller_render_offset: 
+.scroller_render_offset:
         ldy REG_ZERO_FD
         sta .scroll_line_4x4 + $27, y
         tya
@@ -815,7 +815,7 @@ REG_ZERO_FD              = $fd
         ;akku zeigt jetzt auf tabelle targetcolor*16+currentcolor
         ;also auf die richtige zeile und spalte in der tabelle!
         tax ;akku nach X
-        lda .fade_table,x ;hole fade value
+        lda fade_table,x ;hole fade value
         sta .p2C10+1
         rts
 
@@ -854,7 +854,7 @@ REG_ZERO_FD              = $fd
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .p2C20+1
 
         ldy #$00
@@ -862,7 +862,7 @@ REG_ZERO_FD              = $fd
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta $D968,y
         iny
         cpy #$28
@@ -904,19 +904,19 @@ REG_ZERO_FD              = $fd
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .p2C30+1
 
         lda .p2C40+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .p2C40+1
 
         rts
 
-; Fade Out Top Charset 
+; Fade Out Top Charset
 .fade_out_all_4:
         ldx .delay
         inx
@@ -937,28 +937,28 @@ REG_ZERO_FD              = $fd
         jmp C_EXIT_PART
         ldx #$00
 +       stx .fade_count
-        
+
         lda #$00 ;hole zielfarbe
         sta .fade_in_offset
         lda .mc0+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .mc0+1
 
         lda .mc1+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .mc1+1
 
         lda .mc2+1
         and #$0f
         ora .fade_in_offset
         tax
-        lda .fade_table,x
+        lda fade_table,x
         sta .mc2+1
 
         rts
@@ -1010,26 +1010,7 @@ CHARSET: !bin "aeg_collection_09.64c",,2
         !byte $ee,$ee,$ee,$00,$e0,$e0,$e0,$00,$ee,$ee,$ee,$00,$ee,$ee,$ee,$00
 
 ; ************************************************************************** ;
-.fade_table:
-    ;high nibble=target color
-    ;low nibble =source color
-    ;      0   1   2   3   4   5   6   7   8   9   a   b   c   d   e   f
-    !byte $00,$0d,$09,$0c,$02,$08,$02,$0f,$02,$00,$08,$09,$04,$03,$04,$05    ;0
-    !byte $06,$01,$08,$0d,$0c,$03,$0b,$01,$0a,$02,$0f,$04,$03,$01,$03,$07    ;1
-    !byte $09,$07,$02,$0c,$02,$04,$0b,$0f,$02,$02,$08,$02,$04,$03,$04,$0a    ;2
-    !byte $06,$0d,$04,$03,$0c,$03,$0b,$0f,$0c,$02,$0c,$04,$03,$03,$03,$03    ;3
-    !byte $06,$0d,$04,$0c,$04,$0c,$0b,$0f,$04,$02,$04,$04,$04,$03,$04,$0a    ;4
-    !byte $06,$0d,$08,$05,$0c,$05,$0b,$0f,$0c,$02,$0c,$04,$05,$03,$05,$05    ;5
-    !byte $06,$0d,$0b,$0e,$0b,$08,$06,$0f,$0b,$0b,$08,$06,$04,$03,$04,$0c    ;6
-    !byte $09,$07,$08,$0f,$0a,$0f,$0b,$07,$0a,$02,$0f,$04,$0f,$07,$0f,$07    ;7
-    !byte $09,$07,$08,$0c,$08,$0c,$0b,$0f,$08,$02,$08,$08,$08,$03,$04,$0c    ;8
-    !byte $09,$07,$09,$0c,$02,$08,$0b,$0f,$02,$09,$08,$09,$08,$03,$04,$0c    ;9
-    !byte $09,$07,$04,$0c,$0a,$0c,$0b,$0f,$0a,$02,$0a,$04,$0a,$0f,$0c,$0a    ;a
-    !byte $06,$0d,$0b,$0e,$0b,$08,$0b,$0f,$0b,$0b,$08,$0b,$04,$03,$04,$0c    ;b
-    !byte $06,$0d,$08,$0c,$0c,$0c,$0b,$0f,$0c,$02,$0c,$04,$0c,$03,$0c,$0c    ;c
-    !byte $09,$0d,$08,$0d,$0c,$03,$0b,$0d,$0c,$02,$0f,$04,$0f,$0d,$03,$0d    ;d
-    !byte $06,$0d,$04,$0e,$0c,$0e,$0b,$0f,$0c,$02,$0c,$04,$0e,$03,$0e,$0e    ;e
-    !byte $06,$0d,$08,$0f,$0c,$0f,$0b,$0f,$0c,$02,$0f,$04,$0f,$0f,$0f,$0f    ;f
+!src "../../stdlib/tables.asm"
 
 .scroll_delay:      !byte $00
 .scroll_delay_4x4:  !byte $00
