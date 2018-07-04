@@ -2,9 +2,9 @@
 ; Assembler: ACME
 ;BasicUpstart2(start)
 
-!src "../../stdlib/macros.asm"
-!src "../../stdlib/variables.asm"
-!src "../../stdlib/stdlib.a"
+!src "../../../stdlib/macros.asm"
+!src "../../../stdlib/variables.asm"
+!src "../../../stdlib/stdlib.a"
 
 VICSCREENBLOCKNO       = 1 ;Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 VICCHARSETBLOCKNO      = 6 ; 4=$2000 5=$2800, 6=$3000, 7=$3800
@@ -26,7 +26,7 @@ Char2                  = 5 ; 5
   !pet "faf world domination"
 }
 year = 1971
-!src "../../stdlib/basicstart_template.asm"
+!src "../../../stdlib/basicstart_template.asm"
 
 start:
         jsr $e544
@@ -96,20 +96,19 @@ irq2:
         lda $d016
         and #%11101111
         sta $d016
-        +irqEnd $A0,irq3 ; unten
+        +irqEnd $9E,irq3 ; unten
         inc $d019     ; acknowledge interrupt
         jmp $ea81
 
 irq3:
-        lda #$A2 ; Startzeile
+        lda #$A1 ; Startzeile
         cmp $d012
         bne *-3
-        ldx #$0a ; Delay
+        ldx #$0A ; Delay
         dex
         bne *-1
 		lda #$00
 		sta VIC2BorderColour
-		sta VIC2ScreenColour
 
         ; Zeichensatz ausschalten
         lda #16+Char2*2 ;5

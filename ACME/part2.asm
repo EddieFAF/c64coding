@@ -1,4 +1,4 @@
-
+; Part2: Ausblenden Bildschirm durch Reihen von Sprites, die sich stapeln.
 ; Assembler: ACME
       *= $0801
 !byte $0c,$08,$0a,$00,$9e,$32,$30,$36,$34,$00,$00,$00,$00
@@ -86,17 +86,17 @@ start:  sei         ; set up interrupt
         dex
         bne *-1
         nop
-        lda #$0e
+        lda #$0e  ; Hellblau
         sta $d020
-        lda #$06
+        lda #$06  ; Dunkelblau
         sta $d021
 
         ; Zeichensatz ausschalten
-        lda #$16 ;font
+        lda #$16 ;font Kleinbuchstaben?
         sta $d018
         lda #$1b
         sta $d011
-        lda #$C8 ;#$08
+        lda #$C8 ; kein Multicolor
         sta $d016
 
         +irqEnd $b2, .irq2
@@ -132,6 +132,7 @@ start:  sei         ; set up interrupt
         inc $d019     ; acknowledge interrupt
         jmp $ea31
 
+; Derzeit massive Blöcke
 .sprite_line_data:
             !byte %11111111,%11111111,%11111111
             !byte %11111111,%11111111,%11111111

@@ -21,9 +21,11 @@ year = 1971
 
             ;jsr $0900   ; loader Init
             jmp .start
+            ; Einbinden Installer
             *=$0900
             !bin "../../ACME/install-c64.prg",,2
 
+            ; Einbinden Loader
             *=$9000
             !bin "../../ACME/loader-c64.prg",,2
 
@@ -36,10 +38,10 @@ year = 1971
 ; ---------------------------------------------------------------------------
 ; Sprite Linie - Routinen
 ; ---------------------------------------------------------------------------
+
+            ; Spritedaten initialisieren ------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_line_init:
-; ********************************
-; ** Spritedaten initialisieren **
-; ********************************
             ldx #0
 -           lda .sprite_line_data,X
             sta $0340,X
@@ -48,10 +50,9 @@ year = 1971
             bne -
             rts
 
+            ; Sprites einrichten --------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_line_set:
-; ********************************
-; ** Sprites einrichten         **
-; ********************************
             lda #%11111111          ; Sprite 0+1 aktivieren
             sta VIC2SpriteEnable
             ldx #$01
@@ -95,10 +96,9 @@ year = 1971
             !byte 182, 141
             !byte 182, 141
 
+            ; Warten auf Spacetaste -----------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_line_space:
-; **********************
-; ** Warten auf Space
-; **********************
             lda #$7f       ; detect space bar
             sta $dc00
             lda $dc01
@@ -106,6 +106,8 @@ year = 1971
             beq .sprite_line_move
             rts
 
+            ; Sprites bewegen -----------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_line_move:
             ldx VIC2Sprite4X
             inx
@@ -169,9 +171,8 @@ year = 1971
             sta VIC2SpriteDoubleWidth
             rts
 
-; **********************
-; ** stoppe Bewegung
-; **********************
+            ; Ende Sprite Bewegung ------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_line_stop:
             lda #<.color_move
             sta .irq_jump_target+1
@@ -197,10 +198,9 @@ year = 1971
 ; ** Texteinblendung - Routinen **
 ; ********************************
 
+            ; Init des Screens, setzen der Farben ---------------------------]
+            ; ---------------------------------------------------------------]
 .screen_init:
-; ********************************
-; ** Setzen der Farben
-; ********************************
             ldx #$00
 -           lda .char_colors,x
             sta $D968,x
@@ -210,10 +210,9 @@ year = 1971
             bne -
             rts
 
+            ; Spritedaten initialisieren für vertikalen Balken --------------]
+            ; ---------------------------------------------------------------]
 .sprite_text_init:
-; ********************************
-; ** Spritedaten initialisieren **
-; ********************************
             ldx #0
 -           lda .sprite_text_data,X
             sta $0340,X
@@ -222,10 +221,9 @@ year = 1971
             bne -
             rts
 
+            ; Sprites einrichten --------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_text_set:
-; ********************************
-; ** Sprites einrichten         **
-; ********************************
             lda #$03                ; Sprite 0+1 aktivieren
             sta VIC2SpriteEnable
             lda #$00                ; Schwarz
@@ -246,10 +244,9 @@ year = 1971
             sta VIC2SpriteDoubleHeight
             rts
 
+            ; Sprites bewegen -----------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_text_move:
-; **********************
-; ** Text einblenden
-; **********************
             dec .spr_counter
             dec .spr_counter
             bne .sprite_move_loop
@@ -285,10 +282,9 @@ year = 1971
             sta VIC2SpriteXMSB
 +           rts
 
+            ; Text ausblenden -----------------------------------------------]
+            ; ---------------------------------------------------------------]
 .sprite_back:
-; **********************
-; ** Text ausblenden
-; **********************
             dec .spr_counter
             dec .spr_counter
             bne .sprite_back_loop
@@ -348,10 +344,9 @@ year = 1971
 .sprite_set_rts_exit:
             rts
 
+            ; Warten auf Spacetaste vorbereiten -----------------------------]
+            ; ---------------------------------------------------------------]
 .raster_set_space:
-; **********************
-; ** setze 'Warten auf Space'
-; **********************
             lda #<.wait_space
             sta .sprite_change_2+1
             lda #>.wait_space
@@ -360,10 +355,9 @@ year = 1971
             sta VIC2SpriteEnable
             rts
 
+            ; Warten auf Spacetaste -----------------------------------------]
+            ; ---------------------------------------------------------------]
 .wait_space:
-; **********************
-; ** Warten auf Space
-; **********************
             lda #$7f       ; detect space bar
             sta $dc00
             lda $dc01
@@ -415,14 +409,14 @@ year = 1971
             sta .dela
             rts
 
-.fade_out:   ldx .dela
+.fade_out:  ldx .dela
             inx
             stx .dela
             cpx #$04
             beq .col_fade
             rts
 
-.col_fade:   ldx #$00
+.col_fade:  ldx #$00
             stx .dela
             ldx .tabcount
             inx
@@ -431,7 +425,7 @@ year = 1971
             bne .col_cont
             jmp .sprite_set_rts
 
-.col_cont:   ldx .tabcount
+.col_cont:  ldx .tabcount
             lda .fade_tab1,x
             sta .raster1a+1
             sta .raster1b+1
@@ -452,7 +446,8 @@ year = 1971
             !byte $0e, $0e, $03, $01, $03, $0e, $06, $00
 ; ---------------------------------------------------------------------------
 
-; **********************
+            ; Beginn der Hauptroutine ---------------------------------------]
+            ; ---------------------------------------------------------------]
 .start:
 
 RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
@@ -574,15 +569,14 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             cli
             jmp *
 
-; ************************************************
-; ** IRQ Routinen                               **
-; ************************************************
-.irq1:       ldx #$05
+            ; IRQ Routinen --------------------------------------------------]
+            ; ---------------------------------------------------------------]
+.irq1:      ldx #$05
             dex
             bne *-1
-.raster3a:   lda #$0e
+.raster3a:  lda #$0e
             sta VIC2BorderColour
-.raster1a:   lda #$01
+.raster1a:  lda #$01
             sta VIC2ScreenColour
             ldx #$08
             dex
@@ -593,13 +587,13 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             inc VIC2InteruptStatus     ; acknowledge interrupt
             jmp $ea31
 
-.irq2:       lda #$B2
+.irq2:      lda #$B2
             cmp $d012
             bne *-3
             ldx #$09
             dex
             bne *-1
-.raster3b:   lda #$0e
+.raster3b:  lda #$0e
             sta VIC2BorderColour
 .raster1b:   lda #$01
             sta VIC2ScreenColour
@@ -614,9 +608,9 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             inc VIC2InteruptStatus      ; acknowledge interrupt
             jmp $ea31
 
-; ---------------------------------------------------------------------------
-; R A S T E R - R O U T I N E N
-; ---------------------------------------------------------------------------
+
+            ; R A S T E R - R O U T I N E N ---------------------------------]
+            ; ---------------------------------------------------------------]
 .color_move: ldx .dela
             inx
             stx .dela
@@ -624,7 +618,7 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             beq .col_mov
             rts
 
-.col_mov:    ldx #$00
+.col_mov:   ldx #$00
             stx .dela
             ldx .tabcount
             inx
@@ -649,7 +643,7 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             rts
 
 ;umkopieren der Tabellen
-.copy_tabs:  ldx #$00
+.copy_tabs: ldx #$00
 -           lda .rowcolor1+1,x
             sta .rowcolor1,x
             inx
@@ -668,10 +662,8 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             rts
 
 
-; ---------------------------------------------------------------------------
-; S P R I T E D A T A
-; ---------------------------------------------------------------------------
-
+            ; S P R I T E D A T A -------------------------------------------]
+            ; ---------------------------------------------------------------]
 !align 63,0
 .sprite_line_data:
             !byte %00000000,%00000000,%00000000
@@ -721,8 +713,9 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             !byte %11111111,%11111111,%11111111
             !byte %11111111,%11111111,%11111111
             !byte $00
-; ---------------------------------------------------------------------------
 
+            ; Raster Verzögerungstabellen -----------------------------------]
+            ; ---------------------------------------------------------------]
 !align 255,0
 .delaytable:
             !byte 9                            ;letzte Zeile vor der Anzeige
@@ -744,6 +737,8 @@ RASTER      = $6f                              ;Hier den 1. Raster-IRQ auslösen
             !byte 2, 8, 8, 9, 9, 9, 9, 9       ;14.
             !byte 2, 8, 8, 9, 9, 9, 9, 9       ;15.
 
+            ; Farbtabellen --------------------------------------------------]
+            ; ---------------------------------------------------------------]
 .rowcolortable: !fill $50,6
 
 .rowcolor1:

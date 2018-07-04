@@ -4,8 +4,8 @@
 !byte $0c,$08,$0a,$00,$9e,$32,$30,$36,$34,$00,$00,$00,$00
 
 
-!src "c64coding-master/stdlib/stdlib.a"
-!src "c64coding-master/stdlib/macros.asm"
+!src "stdlib/stdlib.a"
+!src "stdlib/macros.asm"
 
 *=$0810
             ; Vorbereitungen -------------------------------------------------]
@@ -24,7 +24,7 @@
             lda #%01100000
             sta $d010
             ldy #$00
--           lda .sprite_ypos
+-           lda .sprite_ypos_new
             sta VIC2Sprite0Y,y
             iny
             iny
@@ -76,22 +76,22 @@ start:      sei                     ; set up interrupt
             ; Start Intro ----------------------------------------------------]
             ; ----------------------------------------------------------------]
 .irq1:
-            lda #$0e
+.c1:        lda #$0e
             sta $d020
-            lda #$06
+.c2:        lda #$06
             sta $d021
 
             ; Zeichensatz ausschalten
             lda #$16 ;font
             sta $d018
-            lda #$1b
+.c3:        lda #$1b
             sta $d011
             lda #$C8 ;#$08
             sta $d016
 
-            inc $d020
+;            inc $d020
 sub:        jsr .sprite_move1
-            dec $d020
+;            dec $d020
 
             inc $d019     ; acknowledge interrupt
             jmp $ea31
@@ -101,6 +101,8 @@ sub:        jsr .sprite_move1
 .sprite_pos_count:
             !byte $00
 
+            ; Sprite Movement ------------------------------------------------]
+            ; ----------------------------------------------------------------]
 .sprite_move1:
             dec .count
             beq +
@@ -132,8 +134,6 @@ subtr:      sbc #$00
             sta .scr_pos+1
             lda .screen_pos_high,x  ; Bildschrim malen HIGH
             sta .scr_pos+2
-;            lda .sprite_length,x
-;            sta .sprite_l+1
             lda .sprite_start,x     ; Start in der Tabelle
             sta .sprite_pos_count
             lda #$00
@@ -149,10 +149,19 @@ subtr:      sbc #$00
             inx
             cpx #05
             bne +
-            ldx #<rt
-            ldy #>rt
+            ldx #<.fade_out
+            ldy #>.fade_out
             stx sub+1
             sty sub+2
+            lda #$0e
+            sta .c2+1        ; Setze Hintergrund
+            lda #$00
+            sta VIC2SpriteEnable ; alle Sprites ausschalten
+            lda #$04
+            sta .count
+            lda #$00
+            sta .c3+1
+            rts
             ldx #$00
 
 +           stx .sprite_row
@@ -162,11 +171,8 @@ subtr:      sbc #$00
             inx
             cpx #$C8
             bne .scr_pos
-;            ldx #$00
-;            stx .sprite_pos_count
-.spr_weiter: 
+.spr_weiter:
             rts
-
 
 .sprite_row:
             !byte $00
@@ -185,7 +191,7 @@ subtr:      sbc #$00
 .sprite_line_data:
 ;                        765432107654321076543210
             +SpriteLine %########################
-            +SpriteLine %........................
+            +SpriteLine %########################
             +SpriteLine %########################
             +SpriteLine %########################
             +SpriteLine %########################
@@ -209,19 +215,6 @@ subtr:      sbc #$00
 
 .sprite_xpos:
             !byte 24,72,120,168,216,08,56,00
-.sprite_ypos:
-            !byte $08,$0b,$0e,$12,$15,$19,$1c,$20
-            !byte $23,$27,$2a,$2e,$31,$34,$38,$3b
-            !byte $3f,$42,$45,$49,$4c,$4f,$52,$56
-            !byte $59,$5c,$5f,$62,$65,$68,$6c,$6f
-            !byte $71,$74,$77,$7a,$7d,$80,$83,$85
-            !byte $88,$8b,$8d,$90,$92,$95,$97,$9a
-            !byte $9c,$9e,$a1,$a3,$a5,$a7,$a9,$ab
-            !byte $ad,$af,$b1,$b3,$b5,$b6,$b8,$ba
-            !byte $bb,$bd,$be,$c0,$c1,$c2,$c3,$c5
-            !byte $c6,$c7,$c8,$c9,$ca,$ca,$cb,$cc
-            !byte $cc,$cd,$ce,$ce,$ce,$cf,$cf,$cf
-            !byte $cf,$cf,$d0,$d0,$d0,$d0,$d0,$d0
 
 PI = 3.14159265358979323846
     ; cos[0,pi/2] scaled to 0-255 range
@@ -235,3 +228,40 @@ PI = 3.14159265358979323846
     ; "cos()" returns cosine. Wow.
     ; "*255" converts interval [0,1] to interval [0,255]
     ; "+0.5" ensures correct rounding to integer
+
+            ; Bildschirm ausblenden -----------------------------------------]
+            ; ---------------------------------------------------------------]
+.fade_out:
+            dec .count
+            beq .fade_out_screen
+            rts
+
+.fade_count: !byte $00
+.fade_out_screen:
+            ldx #$08
+            stx .count
+            ldx .fade_count
+            inx
+            cpx #$10
+            bne +
+            lda #<rt
+            sta sub+1
+            lda #>rt
+            sta sub+2
+            ldx #$00
++           stx .fade_count
+
+            lda .c1+1 ;hole aktuelle farbe
+            and #$0f
+            tax
+            lda fade_table,x   ;hole fade value
+            sta .c1+1          ;schreibe neuen wert
+
+            lda .c2+1 ;hole aktuelle farbe
+            and #$0f
+            tax
+            lda fade_table,x   ;hole fade value
+            sta .c2+1          ;schreibe neuen wert
+            rts
+
+!src "stdlib/tables.asm"
