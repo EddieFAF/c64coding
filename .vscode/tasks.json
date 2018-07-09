@@ -1,0 +1,104 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ACME",
+            "type": "shell",
+			"cwd": "${workspaceFolder}",
+			"command": "c:\\Users\\horn\\Downloads\\C64\\Tools\\ACME\\acme.exe",
+            "args": [
+                "-v3",
+				"-f",
+				"cbm",
+				"-I",
+				".",
+				"-o",
+				"${fileBasenameNoExtension}.prg",
+                "${relativeFile}"
+            ]
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "ACME+Vice",
+            "type": "shell",
+            "command": "c:\\Users\\horn\\Downloads\\C64\\Tools\\ACME\\acme.exe",
+            "args": [
+                "-v3",
+				"-f",
+				"cbm",
+				"-o",
+				"${fileBasenameNoExtension}.prg",
+                "${file}",
+				";",
+				"c:\\Users\\horn\\Downloads\\C64\\Tools\\WinVICE-3.1-x86\\x64.exe",
+				"-moncommands",
+				"${fileBasenameNoExtension}.vs",
+				"${fileBasenameNoExtension}.prg"
+            ]
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "ACME+Exo",
+            "type": "shell",
+            "command": "c:\\Users\\horn\\Downloads\\C64\\Tools\\ACME\\acme.exe",
+            "args": [
+                "-v3",
+				"-f",
+				"cbm",
+				"-o",
+				"${fileBasenameNoExtension}.prg",
+                "${file}",
+				";",
+				"c:\\Users\\horn\\Downloads\\C64\\Tools\\exomizer\\win32\\exomizer.exe", 
+				"sfx", 
+				"basic", 
+				"${fileBasenameNoExtension}.prg", 
+				"-n", 
+				"-o", 
+				"${fileBasenameNoExtension}_exo.prg"
+            ]
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "ACME+Exo+Vice",
+            "type": "shell",
+            "command": "c:\\Users\\horn\\Downloads\\C64\\Tools\\ACME\\acme.exe",
+            "args": [
+                "-v3",
+				"-f",
+				"cbm",
+				"-o",
+				"${fileBasenameNoExtension}.prg",
+                "${file}",
+				";",
+				"c:\\Users\\horn\\Downloads\\C64\\Tools\\exomizer\\win32\\exomizer.exe", 
+				"sfx", 
+				"basic", 
+				"${fileBasenameNoExtension}.prg", 
+				"-n", 
+				"-o", 
+				"${fileBasenameNoExtension}_exo.prg",
+				";",
+				"c:\\Users\\horn\\Downloads\\C64\\Tools\\WinVICE-3.1-x86\\x64.exe",
+				"${fileBasenameNoExtension}_exo.prg"
+            ]
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        }
+		
+
+    ]
+}

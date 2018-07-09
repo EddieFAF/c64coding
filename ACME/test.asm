@@ -16,7 +16,7 @@ COUNTER = $fa
 
 *=$0810
 start:
-        jsr $e544 ; Bildschirm löschen
+        jsr $e544 ; Bildschirm lÃ¶schen
 
         lda #00
         sta $d020
@@ -143,7 +143,7 @@ irq3:
         ldx #$0b ; Delay
         dex
         bne *-1
-        lda #$00 ; Farbe zurücksetzen
+        lda #$00 ; Farbe zurÃ¼cksetzen
         sta $d020
         sta $d021
 
