@@ -4,15 +4,13 @@ providers: [
     config:
       commands: [
         {
-          project: "C:\\Users\\horn\\Downloads\\C64\\Source\\c64coding"
-          source: "C:\\Users\\horn\\Downloads\\C64\\Source\\c64coding\\.build-tools.cson"
-          name: "Build ACME"
-          command: "c:\\\\Users\\\\horn\\\\Downloads\\\\C64\\\\Tools\\\\ACME\\\\acme.exe -v3 -o %e.prg -f cbm %f"
+          project: "D:\\C64\\Source\\c64coding"
+          source: "D:\\C64\\Source\\c64coding\\.build-tools.cson"
+          name: "ACME"
+          command: "d:\\\\C64\\\\Tools\\\\ACME\\\\acme.exe -v3 %f -o %e.prg"
           wd: "."
           env: {}
-          modifier:
-            env:
-              PATH: "C:\\\\Users\\\\horn\\\\Downloads\\\\C64\\\\Tools\\\\ACME\\\\"
+          modifier: {}
           environment:
             name: "child_process"
             config:
@@ -23,9 +21,9 @@ providers: [
             pipeline: []
           output:
             console:
-              close_success: true
+              close_success: false
               queue_in_buffer: true
-              colors: false
+              colors: true
               stdin: false
           version: 2
         }
