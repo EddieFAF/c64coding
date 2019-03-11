@@ -8,9 +8,9 @@
 //***********************************************************************
 // KickAss Style
 
-#import "../stdlib/functions.inc" // Stellt ein paar Macros bereit
-#import "../stdlib/stdlib_k.a" // Sprungziele
-#import "../stdlib/macros.inc"
+#import "../../stdlib/functions.inc" // Stellt ein paar Macros bereit
+#import "../../stdlib/stdlib_k.a" // Sprungziele
+#import "../../stdlib/macros.inc"
 
 
                         // constants 
