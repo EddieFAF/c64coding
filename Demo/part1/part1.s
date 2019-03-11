@@ -25,7 +25,7 @@
 .var delay_char            = $10
 .var delay_screen          = $20
 
-.var RELEASE = 1
+.var RELEASE = 0
 
 .if (RELEASE==1) { .eval C_EXIT_PART = $c1ab } else { .eval C_EXIT_PART = $fce2 }
 .if (RELEASE==1) { .eval C_APPLY_INTERRUPT = $c19f } else { .eval C_APPLY_INTERRUPT = APPLY_INTERRUPT }

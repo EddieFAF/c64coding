@@ -6,11 +6,11 @@
 //**  Author (c): [FAF]Eddie                                           **
 //**  File Date: 2018-04-11                                            **
 //***********************************************************************
-#import "../stdlib/stdlib_k.a"
-#import "../stdlib/macros.inc"
-#import "../stdlib/functions.inc"
+#import "../../stdlib/stdlib_k.a"
+#import "../../stdlib/macros.inc"
+#import "../../stdlib/functions.inc"
 
-.var RELEASE = 1
+.var RELEASE = 0
 
                         // constants
 .var C_SCREEN_RAM             = $0400
