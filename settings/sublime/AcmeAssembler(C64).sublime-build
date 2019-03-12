@@ -1,0 +1,78 @@
+{
+    // BUGS
+    //-----
+    // - Windows: If filename contains å, ö, ä it will not launch in Vice
+    // - Windows+OSX: If filename contains spaces, it will not launch in Vice for Variants Build and Run and Build and Debug
+
+    "selector": "source.assembly.acmeassembler",
+    "shell": true,  //Windows: Doesnt matter
+                    //OSX: Must be true and arguments in one string with quoted paths, otherwise error
+    "encoding": "cp1252", //Windows: Needed
+    "file_regex": "^at line (?=[0-9]*, column [0-9]* in ([^ ]*).*$)([0-9]*), column ([0-9]*)", //filename, line number, column number and error message
+
+    // Ongoing work with extracting error message, does not currently work
+    //"line_regex": "^at line (?=[0-9]*, column [0-9]* in ([^ ]*).*$)([0-9]*), column ([0-9]*)",
+    //"file_regex": "^Error: (.*)$",
+
+	
+	
+    // Build only (F3)
+    "cmd": ["java -jar '/Applications/KickAssembler/KickAss.jar' '${file}' -log '${file_base_name}_BuildLog.txt' -o '${file_base_name}_Compiled.prg' -vicesymbols -showmem"],
+    "windows":
+    {
+        //${file} can probably be replaced by ${file_name} below, since working directory is file directory (applys to all Variants)
+        "cmd": ["acme.exe", "-v3", "-o", "${file_base_name}.prg", "-f", "cbm", "${file}"],
+        "path": "%path%;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Assembler\\Acme\\;%windir%\\SysWOW64;"
+    },
+
+
+	
+	
+    "variants": [
+        {
+            // Build and Run (F7)
+            "name": "Build and Run",
+            "cmd": ["java -jar '/Applications/KickAssembler/KickAss.jar' '${file_name}' -log '${file_base_name}_BuildLog.txt' -o '${file_base_name}_Compiled.prg' -vicesymbols -showmem -execute '/Applications/VICE/X64.app/Contents/MacOS/x64 +confirmexit -moncommands ${file_base_name}.vs'"],
+            "windows":
+            {
+                "cmd": ["acme.exe", "-f", "cbm", "-v3","-o" ,"${file_base_name}.prg", "${file}", "&", "x64.exe","-truedrive", "${file_base_name}.prg"], 
+                "path": "%path%;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Assembler\\Acme\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\WinVice-3.1-x86\\;%windir%\\SysWOW64;"
+            },
+        },
+
+        {
+            // Run MAKEFILE (F1)
+            "name": "Run Makefile",
+            "cmd": ["java -jar '/Applications/KickAssembler/KickAss.jar' '${file_name}' -log '${file_base_name}_BuildLog.txt' -o '${file_base_name}_Compiled.prg' -vicesymbols -showmem -afo :afo=true -execute '/Applications/VICE/X64.app/Contents/MacOS/x64 +confirmexit -moncommands breakpoints.txt'"],
+            "windows":
+            {
+                "cmd": ["make.bat"], 
+                "path": "%path%;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\WinVice-3.1-x86\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Assembler\\Acme\\;%windir%\\SysWOW64;"
+            },
+        },
+
+        {
+            // Build, Exo 
+            "name": "Build and Exo",
+            "cmd": ["java -jar '/Applications/KickAssembler/KickAss.jar' '${file_name}' -log '${file_base_name}_BuildLog.txt' -o '${file_base_name}_Compiled.prg' -vicesymbols -showmem -afo :afo=true -execute '/Applications/VICE/X64.app/Contents/MacOS/x64 +confirmexit -moncommands breakpoints.txt'"],
+            "windows":
+            {
+                "cmd": ["acme.exe", "-f", "cbm", "-v4","-o" ,"${file_base_name}.prg", "${file}", "&", "exomizer.exe", "sfx", "basic", "${file_base_name}.prg", "-n", "-o", "${file_base_name}_exo.prg"], 
+                "path": "%path%;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Assembler\\Acme\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Exomizer\\win32\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\WinVice-3.1-x86\\;%windir%\\SysWOW64;"
+            },
+        },
+
+        {
+            // Build, Exo and Run (F9)
+            "name": "Build, Exo and Run",
+            "cmd": ["java -jar '/Applications/KickAssembler/KickAss.jar' '${file_name}' -log '${file_base_name}_BuildLog.txt' -o '${file_base_name}_Compiled.prg' -vicesymbols -showmem -afo :afo=true -execute '/Applications/VICE/X64.app/Contents/MacOS/x64 +confirmexit -moncommands breakpoints.txt'"],
+            "windows":
+            {
+                "cmd": ["acme.exe", "-f", "cbm", "-v4","-o" ,"${file_base_name}.prg", "${file}", "&", "exomizer.exe", "sfx", "basic", "${file_base_name}.prg", "-n", "-o", "${file_base_name}_exo.prg", "&", "x64.exe","-truedrive", "${file_base_name}_exo.prg"], 
+                "path": "%path%;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Assembler\\Acme\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\Exomizer\\win32\\;C:\\Users\\DKX80DG\\Downloads\\C64\\Tools\\WinVice-3.1-x86\\;%windir%\\SysWOW64;"
+            },
+        },
+
+    ]
+}
+

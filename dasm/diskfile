@@ -1,0 +1,3 @@
+unpacked.prg UNPACKED_PIC
+tst_unp.prg LOADER
+tst_unp-compressed.prg LOADER2

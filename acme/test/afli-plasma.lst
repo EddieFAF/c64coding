@@ -1,0 +1,35 @@
+
+al C:0a00 .sinus1
+al C:0c00 .sinus2
+al C:0e00 .sinus3
+al C:9c00 .aflicolor
+al C:9a00 .chartab
+al C:0050 .m
+al C:0050 .p
+al C:3800 .stext
+al C:2800 .paydata
+al C:080b .nextpart
+
+al C:81d8 .irq1
+al C:81c6 .fwait1
+al C:81cb .fwait2
+al C:87dd .irq3
+al C:870f .irq2
+al C:892b .sinroute1
+al C:8dbc .sinroute2
+al C:924d .sinroute3
+al C:8721 .scroller
+al C:8052 .loading
+al C:8153 .firq2
+al C:80ad .firq1
+al C:81db .fixit
+al C:888c .rwait1
+al C:8891 .rwait2
+al C:81ee .start
+al C:872c .space
+al C:81d0 .frast
+al C:8123 .pfcol
+al C:87ef .fout1
+al C:87f4 .fout2
+al C:87f9 .fout3
+al C:886b .sinchange
