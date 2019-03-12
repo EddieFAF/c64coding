@@ -9,7 +9,7 @@ al C:8ee .warte_update
 al C:903 .fade_update
 al C:8de .warte_delay
 al C:b00 .text
-al C:3f40 .colora
+al C:2780 .colora
 al C:8da .warte
 al C:a09 .fade_table
 al C:80e .start

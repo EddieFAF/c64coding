@@ -13,7 +13,7 @@
 .label tcnt=$9a7
 .label warte_update=$8ee
 .label warte_delay=$8de
-.label colora=$3f40
+.label colora=$2780
 .label warte=$8da
 .label fade_table=$a09
 .label start=$80e
