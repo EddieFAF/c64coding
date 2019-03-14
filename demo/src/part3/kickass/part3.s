@@ -8,9 +8,9 @@
 //***********************************************************************
 // Assembler: KickAss
 
-#import "../../stdlib/stdlib_k.a"
-#import "../../stdlib/macros.inc"
-#import "../../stdlib/functions.inc"
+#import "../../../lib/kickass/stdlib_k.a"
+#import "../../../lib/kickass/macros.inc"
+#import "../../../lib/kickass/functions.inc"
 //.import source "../../loader/loader.sym"
 
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
@@ -18,7 +18,7 @@
 .var C_APPLY_INTERRUPT       = $0840 //loader.apply_interrupt // $0840
 .var C_EXIT_PART             = $084c //loader.exit_intro_part // $084C
 
-.var RELEASE                = 1
+.var RELEASE                = 0
 
 .var MC_color2              = $0c
 .var MC_color1              = $0d
@@ -347,10 +347,10 @@ text:
 
 
         *=$1000
-.import binary "Nightshift.sid",$7e
+.import binary "../../../res/music/Nightshift.sid",$7e
 
         *=$2000
         #import "gfx_k.inc"
 
 char_data: // Lade direkt und verschiebe später
-        .import c64 "devils_collection_26_y.64c"
+        .import c64 "../../../res/fonts/devils_collection_26_y.64c"

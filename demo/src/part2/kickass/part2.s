@@ -6,9 +6,9 @@
 //**  Author (c): [FAF]Eddie                                           **
 //**  File Date: 2018-04-11                                            **
 //***********************************************************************
-#import "../../stdlib/stdlib_k.a"
-#import "../../stdlib/macros.inc"
-#import "../../stdlib/functions.inc"
+#import "../../../lib/kickass/stdlib_k.a"
+#import "../../../lib/kickass/macros.inc"
+#import "../../../lib/kickass/functions.inc"
 
 .var RELEASE = 0
 
@@ -894,7 +894,7 @@ original_C50:       .byte $01
 original_C51:       .byte $00
 
 *=$1000
-.import binary "One_Man_and_His_Droid.sid",$7e
+.import binary "../../../res/music/One_Man_and_His_Droid.sid",$7e
 
 
 //***********************************************************************
@@ -904,7 +904,7 @@ original_C51:       .byte $00
 //***********************************************************************
 
 *=$2000
-CHARSET: .import c64 "aeg_collection_09.64c"
+CHARSET: .import c64 "../../../res/fonts/aeg_collection_09.64c"
 // 4x4 dot matrix
         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0e, $0e, $0e, $00
         .byte $00, $00, $00, $00, $e0, $e0, $e0, $00, $00, $00, $00, $00, $ee, $ee, $ee, $00

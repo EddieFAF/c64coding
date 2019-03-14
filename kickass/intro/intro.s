@@ -1,9 +1,9 @@
 // Assembler: Kick Assembler
 BasicUpstart2(start)
 
-#import "../macros.inc"
-#import "../variables.inc"
-#import "../functions.inc"
+#import "../../demo/lib/kickass/macros.inc"
+#import "../../demo/lib/kickass/variables.inc"
+#import "../../demo/lib/kickass/functions.inc"
 
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 .var VICCHARSETBLOCKNO      = 6 // 4=$2000 5=$2800, 6=$3000, 7=$3800
@@ -12,7 +12,7 @@ BasicUpstart2(start)
 .var MC_color1              = $0d
 .var BG_color               = $0b
 
-.var music = LoadSid("Nightshift.sid")    //<- Here we load the sid file
+.var music = LoadSid("../../demo/res/music/Nightshift.sid")    //<- Here we load the sid file
         //:equalCharPack("loading320x200.png", $3800, $2800)
 
 start:
@@ -310,7 +310,7 @@ text:
 
 *=* "Charset1x1"
 char_data: // Lade direkt und verschiebe später
-        .import c64 "devils_collection_26_y.64c"
+        .import c64 "../../demo/res/fonts/devils_collection_26_y.64c"
 
         *=music.location "Music"
 music_data:

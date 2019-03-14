@@ -7,9 +7,9 @@
 //**  File Date: 2018-02-28                                            **
 //***********************************************************************
 //!initmem $ea        // Speicher vorfuellen
-#import "../../stdlib/stdlib_k.a"
-#import "../../stdlib/macros.inc"
-#import "../../stdlib/functions.inc"
+#import "../../../lib/kickass/stdlib_k.a"
+#import "../../../lib/kickass/macros.inc"
+#import "../../../lib/kickass/functions.inc"
 
 //my Routine, that starts with a nice BASIC line
 BasicUpstart2(start)
@@ -18,11 +18,11 @@ BasicUpstart2(start)
             jmp start
             // Einbinden Installer
             *=$0900
-            .import c64 "../../ACME/install-c64.prg"
+            .import c64 "../../../../ACME/install-c64.prg"
 
             // Einbinden Loader
             *=$9000
-            .import c64 "../../ACME/loader-c64.prg"
+            .import c64 "../../../../ACME/loader-c64.prg"
 
             * = $c000   // Nach $c000 verlegen, da stoert es die Parts nicht
 

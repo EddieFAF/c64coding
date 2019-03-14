@@ -2,9 +2,9 @@
 // Assembler: Kick Assembler
 BasicUpstart2(start)
 
-#import "../../macros.inc"
-#import "../../variables.inc"
-#import "../../functions.inc"
+#import "../../../demo/lib/kickass/macros.inc"
+#import "../../../demo/lib/kickass/variables.inc"
+#import "../../../demo/lib/kickass/functions.inc"
 
 .var VICSCREENBLOCKNO       = 1 //Nr. (0 -15) des 1KB-Blocks für den Textbildschirm      | Standard: 1
 .var VICCHARSETBLOCKNO      = 6 // 4=$2000 5=$2800, 6=$3000, 7=$3800
@@ -19,7 +19,7 @@ BasicUpstart2(start)
 .var Char1                  = 4 // 4
 .var Char2                  = 5 // 5
 
-.var music = LoadSid("../Nightshift.sid")    //<- Here we load the sid file
+.var music = LoadSid("../../../demo/res/music/Nightshift.sid")    //<- Here we load the sid file
         //:equalCharPack("loading320x200.png", $3800, $2800)
 
 start:
@@ -409,7 +409,7 @@ color3:      .byte $0e,$0e,$02,$02,$08,$08,$0a,$0a,$0f,$0f
         #import "include/charset2.inc"
 *=* "Charset1x1"
 char_data: // Lade direkt und verschiebe später
-        .import c64 "../aeg_collection_09.64c"
+        .import c64 "../../../demo/res/fonts/aeg_collection_09.64c"
 
         *=music.location "Music"
 music_data:
