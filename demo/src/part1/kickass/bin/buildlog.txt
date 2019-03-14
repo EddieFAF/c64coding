@@ -1,0 +1,17 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+  File creation disabled (no breakpoint file created)
+Writing prg file: part1.prg
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$0dae Basic End
+  $1000-$2290 Unnamed
+  $4000-$4cd1 Unnamed
+
+Writing Symbol file: part1.sym
