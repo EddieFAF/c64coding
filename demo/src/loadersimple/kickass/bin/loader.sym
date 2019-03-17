@@ -1,0 +1,6 @@
+.label text1=$8b5
+.label text2=$8dd
+.label screeninit=$8a2
+.label start=$80e
+.label irq1=$843
+.label irq2=$879
