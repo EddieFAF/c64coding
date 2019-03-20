@@ -11,6 +11,9 @@
 #import "../../../lib/kickass/macros.inc"
 #import "../../../lib/kickass/functions.inc"
 
+.var Zeile = 12
+.var Farbe = $0F
+
 BasicUpstart2(start)
 
 start:
@@ -25,7 +28,7 @@ start:
         sta $dd0d
         and $d011                                       //  clear high bit of raster line
         sta $d011
-        :irqEnd #$71:#irq1
+        :irqEnd #(Zeile*8)+42-7:#irq1
 
         lda #$01      // enable raster interrupts
         sta $d01a
@@ -34,13 +37,13 @@ start:
 
 // ** IRQ Routinen **
 irq1:
-        lda #$78
+        lda #Zeile*8+40
         cmp $d012
         bne *-3
         ldx #$0B                                        //  Delay
         dex
         bne *-1
-        lda #$0B
+        lda #Farbe
         sta $d020
         sta $d021
         ldx #$09
@@ -49,18 +52,18 @@ irq1:
         lda #$00
         sta $d020
         sta $d021
-        :irqEnd #$81:#irq2
+        :irqEnd #Zeile*8+40+7:#irq2
         inc VIC2InteruptStatus                          //  acknowledge interrupt
         jmp $ea81
 
 irq2:
-        lda #$82
+        lda #Zeile*8+40+10
         cmp $d012
         bne *-3
         ldx #$0B
         dex
         bne *-1
-        lda #$0B
+        lda #Farbe
         sta $d020
         sta $d021
         ldx #$03
@@ -88,7 +91,7 @@ irq3:
 
         jsr colmove
 
-        :irqEnd #$71:#irq1
+        :irqEnd #Zeile*8+42-7:#irq1
         inc VIC2InteruptStatus      // acknowledge interrupt
         jmp $ea81
 
@@ -96,9 +99,9 @@ irq3:
 screeninit:
         ldx #$00
 !:      lda text1,x
-        sta $0568,x
+        sta $0400+(Zeile-1)*40,x
         lda #$00
-        sta $d968,x
+        sta $d800+(Zeile-1)*40,x
         inx
         cpx #$28
         bne !-
@@ -117,7 +120,7 @@ colmove:
         ldx pos
         lda col,x
         ldx #$00
-!:      sta $d968,x
+!:      sta $d800+(Zeile-1)*40,x
         inx
         cpx #$28
         bne !-
