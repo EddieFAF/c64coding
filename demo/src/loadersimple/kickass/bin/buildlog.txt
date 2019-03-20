@@ -10,6 +10,6 @@ Memory Map
 ----------
 Default-segment:
   $0801-$080c Basic
-  $080e-$0904 Basic End
+  $080e-$0978 Basic End
 
 Writing Symbol file: loader.sym

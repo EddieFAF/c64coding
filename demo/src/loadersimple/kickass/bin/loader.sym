@@ -1,6 +1,11 @@
-.label text1=$8b5
-.label text2=$8dd
-.label screeninit=$8a2
+.label text1=$919
+.label text2=$941
+.label screeninit=$8d5
+.label pos=$918
+.label count=$917
 .label start=$80e
-.label irq1=$843
-.label irq2=$879
+.label irq1=$839
+.label irq3=$8a7
+.label irq2=$86f
+.label col=$969
+.label colmove=$8e8
