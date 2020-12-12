@@ -69,7 +69,7 @@ start:  sei         // set up interrupt
         cpx #$28
         bne !l-
 
-        // Screen neu füllen
+        // Screen neu fÃ¼llen
         jsr copy
 
         :irqEnd #$00:#irq1
@@ -257,7 +257,7 @@ weiter: ldx #C_DELAY
         inx
         bne !l-
 
-        // Screen neu füllen
+        // Screen neu fÃ¼llen
 copy:   ldx colcount
         ldy #$00
 !l:     lda coltab+2,x

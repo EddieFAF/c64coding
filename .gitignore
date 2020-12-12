@@ -1,5 +1,6 @@
-
+*.log
 *.prg
 Demo/part1/bin/buildlog.txt
 demo/src/loadersimple/kickass/bin/buildlog.txt
 *.sym
+kickass/bin/buildlog.txt

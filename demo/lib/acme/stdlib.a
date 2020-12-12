@@ -14,7 +14,7 @@ kSize_16K   = 8 * 1024
 ; Each enabled bit sets read and write on the processor port (ZPProcessorPort) otherwise the value can just be read.
 ; Default: $2F, %101111
 ZPProcessorPortDDR              = $00
-ProcessorPortDDRDefault         = %101111
+ProcessorPortDDRDefault         = %00101111
 
 ; Bits 0-2: Configuration for memory areas $A000-$BFFF, $D000-$DFFF and $E000-$FFFF. Values:
 ; %x00: RAM visible in all three areas.
@@ -28,10 +28,10 @@ ProcessorPortDDRDefault         = %101111
 ; Bit 5: Datasette motor control; 0 = On; 1 = Off.
 ; Default: $37, %110111
 ZPProcessorPort                 = $01
-ProcessorPortDefault            = %110111
-ProcessorPortAllRAMWithIO       = %100101
-ProcessorPortAllRAM             = %100000
-ProcessorPortKERNALWithIO       = %100110
+ProcessorPortDefault            = %00110111
+ProcessorPortAllRAMWithIO       = %00100101
+ProcessorPortAllRAM             = %00100000
+ProcessorPortKERNALWithIO       = %00100110
 
 ; $02 - $06 are unused (apparently).
 
@@ -551,11 +551,11 @@ SIDVoice3ADSROutput             = $d41c     ; Read only
 
 ; CIA1
 
-JoystickBits_Up     = %1
-JoystickBits_Down   = %10
-JoystickBits_Left   = %100
-JoystickBits_Right  = %1000
-JoystickBits_Fire   = %10000
+JoystickBits_Up     = %00000001
+JoystickBits_Down   = %00000010
+JoystickBits_Left   = %00000100
+JoystickBits_Right  = %00001000
+JoystickBits_Fire   = %00010000
 
 JoystickBits_AllDirections = JoystickBits_Up | JoystickBits_Down | JoystickBits_Left | JoystickBits_Right
 
@@ -651,7 +651,7 @@ CIA1TimerBControl               = $dc0f
 ; Bit 6: Serial bus CLOCK IN; 0 = High; 1 = Low.
 ; Bit 7: Serial bus DATA IN; 0 = High; 1 = Low.
 CIA2PortASerialBusVICBank       = $dd00
-CIA2PortASerialBusVICBankDefault= %11
+CIA2PortASerialBusVICBankDefault= %00000011
 CIA2PortASerialBusVICBankMask   = $3fff
 
 ; Read bits:

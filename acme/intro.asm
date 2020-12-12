@@ -4,8 +4,8 @@
 !byte $0c,$08,$0a,$00,$9e,$32,$30,$36,$34,$00,$00,$00,$00
 
 
-!src "../stdlib/stdlib.a"
-!src "../stdlib/macros.asm"
+!src "../demo/lib/acme/stdlib.a"
+!src "../demo/lib/acme/macros.asm"
 
         .Zeilenstart = $6A ; erste Rasterzeile von Bildschirmzeile 08
         .Zeilenende  = $BF ; Letzte Rasterzeile von Bildschirmzeile 18
@@ -76,7 +76,7 @@ start:  sei         ; set up interrupt
         cpx #$28
         bne -
 
-        ; Zeilen einmalig füllen
+        ; Zeilen einmalig fÃ¼llen
         jsr .copy
 
         +irqEnd $00,.irq1
@@ -239,7 +239,7 @@ start:  sei         ; set up interrupt
         sta .sub+1
         sty .sub+2
 
-        ; Screen neu füllen
+        ; Screen neu fÃ¼llen
 .copy:   ldx .colcount
         ldy #$00
 -       lda .coltab+2,x
@@ -272,7 +272,7 @@ start:  sei         ; set up interrupt
         bne -
         rts
 
-        ; Verzögerung vor Effekt 1 -----------------------------------------]
+        ; VerzÃ¶gerung vor Effekt 1 -----------------------------------------]
         ; ------------------------------------------------------------------]
 .delayer:
         ldx .count
@@ -283,11 +283,11 @@ start:  sei         ; set up interrupt
         ldy #>.col_update
         stx .sub+1
         sty .sub+2
-        ldx #$40 ; Wert für Verzögerer 2
+        ldx #$40 ; Wert fÃ¼r VerzÃ¶gerer 2
         stx .count
 +       rts
 
-        ; Verzögerung vor Effekt 2 -----------------------------------------]
+        ; VerzÃ¶gerung vor Effekt 2 -----------------------------------------]
         ; ------------------------------------------------------------------]
 .delayer2:
         ldx .count
@@ -300,7 +300,7 @@ start:  sei         ; set up interrupt
         sty .sub+2
 +       rts
 
-.count: !byte $20 ; Verzögerungszähler
+.count: !byte $20 ; VerzÃ¶gerungszÃ¤hler
 
         ; Zeilen einblenden ------------------------------------------------]
         ; ------------------------------------------------------------------]

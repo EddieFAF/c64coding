@@ -9,8 +9,8 @@
 !cpu 6510
 !sl "fullpart.lbl"
 !initmem $ea        ; Speicher vorfüllen
-!src "../../stdlib/macros.asm" ; Stellt ein paar Macros bereit
-!src "../../stdlib/stdlib.a"
+!src "../../../lib/acme/macros.asm" ; Stellt ein paar Macros bereit
+!src "../../../lib/acme/stdlib.a"
 
 ;my Routine, that starts with a nice BASIC line
 !macro der_text {
